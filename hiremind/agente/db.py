@@ -92,6 +92,45 @@ def obtener_vacante(con, vacante_id: int) -> Vacante | None:
     return next((v for v in listar_vacantes(con) if v.id == vacante_id), None)
 
 
+def borrar_vacante(con, vacante_id: int) -> bool:
+    return con.execute("DELETE FROM vacantes WHERE id=?", (vacante_id,)).rowcount > 0
+
+
+def estadisticas_vacantes(con) -> dict[int, dict]:
+    """Por vacante: CV evaluados, en revisión manual, mejor puntaje y promedio."""
+    out = {}
+    for f in con.execute(
+        "SELECT v.id, v.creada, "
+        "SUM(c.estado='evaluado') AS evaluados, SUM(c.estado='revision_manual') AS revision, "
+        "MAX(e.puntaje) AS mejor, AVG(e.puntaje) AS promedio, MAX(c.creado) AS ultima "
+        "FROM vacantes v LEFT JOIN candidatos c ON c.vacante_id=v.id "
+        "LEFT JOIN evaluaciones e ON e.candidato_id=c.id GROUP BY v.id"):
+        out[f["id"]] = {"creada": f["creada"], "evaluados": f["evaluados"] or 0, "revision": f["revision"] or 0,
+                        "mejor": f["mejor"], "promedio": round(f["promedio"], 1) if f["promedio"] is not None else None,
+                        "ultima_actividad": f["ultima"]}
+    return out
+
+
+def resumen(con) -> dict:
+    """Números del panel de inicio."""
+    tot = con.execute(
+        "SELECT (SELECT COUNT(*) FROM vacantes) AS vacantes, "
+        "(SELECT COUNT(*) FROM candidatos WHERE estado='evaluado') AS evaluados, "
+        "(SELECT COUNT(*) FROM candidatos WHERE estado='revision_manual') AS revision, "
+        "(SELECT AVG(segundos) FROM evaluaciones) AS seg, "
+        "(SELECT COUNT(*) FROM evaluaciones WHERE corregida=1) AS corregidas").fetchone()
+    puntajes = [f[0] for f in con.execute("SELECT puntaje FROM evaluaciones")]
+    rangos = [(0, 25), (25, 50), (50, 75), (75, 101)]
+    distribucion = [{"rango": f"{a}–{min(b, 100)}", "cantidad": sum(a <= p < b for p in puntajes)} for a, b in rangos]
+    recientes = [dict(f) for f in con.execute(
+        "SELECT c.id, c.nombre, c.archivo, c.estado, c.creado, v.id AS vacante_id, v.titulo AS vacante, "
+        "e.puntaje FROM candidatos c JOIN vacantes v ON v.id=c.vacante_id "
+        "LEFT JOIN evaluaciones e ON e.candidato_id=c.id ORDER BY c.creado DESC, c.id DESC LIMIT 8")]
+    return {"vacantes": tot["vacantes"], "evaluados": tot["evaluados"], "revision": tot["revision"],
+            "segundos_promedio": round(tot["seg"], 1) if tot["seg"] is not None else None,
+            "corregidas": tot["corregidas"], "distribucion": distribucion, "recientes": recientes}
+
+
 # ---------------------------------------------------------------- candidatos y evaluaciones
 def borrar_candidato(con, vacante_id: int, archivo: str) -> None:
     con.execute("DELETE FROM candidatos WHERE vacante_id=? AND archivo=?", (vacante_id, archivo))
@@ -131,13 +170,14 @@ def ranking(con, vacante_id: int) -> list[dict]:
     """Candidatos evaluados ordenados por puntaje (todos; no se descarta a nadie)."""
     filas = con.execute(
         "SELECT c.id, c.archivo, c.nombre, c.datos_quitados, e.id AS eval_id, e.puntaje, "
-        "e.justificacion, e.segundos, e.intentos, e.corregida "
+        "e.justificacion, e.segundos, e.intentos, e.corregida, e.extraccion_json "
         "FROM candidatos c JOIN evaluaciones e ON e.candidato_id = c.id "
         "WHERE c.vacante_id = ? ORDER BY e.puntaje DESC, c.nombre", (vacante_id,)).fetchall()
     out = []
     for f in filas:
         d = dict(f)
         d["datos_quitados"] = json.loads(d["datos_quitados"])
+        d["extraccion"] = json.loads(d.pop("extraccion_json"))
         d["criterios"] = [
             ResultadoCriterio(criterio_id=r["criterio_id"], nombre=r["nombre"], peso=r["peso"],
                               estado=r["estado"], detalle=r["detalle"],
@@ -150,8 +190,19 @@ def ranking(con, vacante_id: int) -> list[dict]:
 
 def revision_manual(con, vacante_id: int) -> list[dict]:
     return [dict(f) for f in con.execute(
-        "SELECT archivo, motivo, creado FROM candidatos WHERE vacante_id=? AND estado='revision_manual' "
+        "SELECT id, archivo, motivo, creado FROM candidatos WHERE vacante_id=? AND estado='revision_manual' "
         "ORDER BY archivo", (vacante_id,))]
+
+
+def candidato(con, candidato_id: int) -> dict | None:
+    f = con.execute("SELECT id, vacante_id, archivo FROM candidatos WHERE id=?", (candidato_id,)).fetchone()
+    return dict(f) if f else None
+
+
+def evaluacion_de(con, eval_id: int) -> dict | None:
+    f = con.execute("SELECT e.id, c.vacante_id FROM evaluaciones e JOIN candidatos c ON c.id=e.candidato_id "
+                    "WHERE e.id=?", (eval_id,)).fetchone()
+    return dict(f) if f else None
 
 
 def corregir_criterio(con, eval_id: int, criterio_id: str, nuevo_estado: str) -> float:

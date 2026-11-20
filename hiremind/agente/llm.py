@@ -28,6 +28,7 @@ PROMPT_JUSTIFICACION = """Eres un asistente de selección de personal. Redacta e
 Reglas:
 - Usa SOLO la información de los criterios y evidencias que se te entregan. No agregues nada más.
 - Menciona primero las fortalezas y luego lo que no se pudo identificar en el CV.
+- Refiérete a la persona por su nombre o como "la persona candidata" (lenguaje neutro, sin asumir género).
 - No menciones edad, género, estado civil, nacionalidad, religión, apariencia ni otros datos personales.
 - No digas si se debe contratar o no: la decisión es de la persona que revisa.
 Devuelve un JSON con el campo "justificacion"."""

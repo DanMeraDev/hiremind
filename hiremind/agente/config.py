@@ -6,6 +6,8 @@ LLM_URL = os.getenv("HIREMIND_LLM_URL", "http://localhost:1234/v1")
 MODELO = os.getenv("HIREMIND_MODELO", "qwen/qwen3-4b-2507")
 
 DB_PATH = os.getenv("HIREMIND_DB", "hiremind.db")
+# Copia de los PDF subidos (para abrir el original desde la interfaz)
+ARCHIVOS_DIR = os.getenv("HIREMIND_ARCHIVOS", "archivos")
 
 # Un PDF con menos caracteres que esto se considera escaneado/ilegible -> revisión manual
 MIN_CARACTERES = 200
