@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import clsx from "clsx";
 import { Briefcase, ChevronRight, Cpu, FileUp, LayoutDashboard, ListChecks, Menu, Trophy, UserCheck, X } from "lucide-react";
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
+import { Palabras } from "./anim";
 import { Link, NavLink, Outlet, useLocation } from "react-router";
 import { api } from "../api";
 import { BotonTema, Logo } from "./ui";
@@ -10,11 +11,11 @@ function EstadoLLM() {
   const { data, isLoading } = useQuery({ queryKey: ["estado"], queryFn: api.estado, refetchInterval: 15000 });
   const ok = data?.llm_ok;
   return (
-    <div className="rounded-lg border border-zinc-200 bg-white p-3 text-xs dark:border-zinc-800 dark:bg-zinc-900">
-      <div className="flex items-center gap-2 font-medium">
-        <span className="relative flex size-2">
-          {ok && <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-60" />}
-          <span className={clsx("relative inline-flex size-2 rounded-full", isLoading ? "bg-zinc-300" : ok ? "bg-emerald-500" : "bg-rose-500")} />
+    <div className={clsx("border-2 border-(--tinta) p-3 text-xs shadow-xs", ok ? "bg-menta-claro dark:bg-zinc-900" : "bg-white dark:bg-zinc-900")}>
+      <div className="flex items-center gap-2 font-bold">
+        <span className="relative flex size-2.5">
+          {ok && <span className="absolute inline-flex size-full animate-[hm-late_1.6s_ease-out_infinite] bg-menta" />}
+          <span className={clsx("relative inline-flex size-2.5 border-[1.5px] border-noche", isLoading ? "bg-zinc-300" : ok ? "bg-menta" : "bg-coral")} />
         </span>
         {isLoading ? "Comprobando modelo…" : ok ? "Modelo local activo" : "Modelo sin conexión"}
       </div>
@@ -32,10 +33,10 @@ function Navegacion({ alNavegar }: { alNavegar?: () => void }) {
   const id = useLocation().pathname.match(/\/app\/vacantes\/(\d+)/)?.[1];
   const enlace = ({ isActive }: { isActive: boolean }) =>
     clsx(
-      "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm font-medium transition",
+      "flex items-center gap-2.5 border-2 px-2.5 py-1.5 text-sm font-bold transition-[transform,background-color,box-shadow] duration-200 ease-rebote",
       isActive
-        ? "bg-white text-zinc-900 shadow-xs ring-1 ring-zinc-200 dark:bg-zinc-800 dark:text-white dark:ring-zinc-700"
-        : "text-zinc-600 hover:bg-zinc-200/60 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/70 dark:hover:text-zinc-100",
+        ? "border-(--tinta) bg-menta text-noche shadow-xs"
+        : "border-transparent text-zinc-600 hover:translate-x-1 hover:bg-zinc-100 hover:text-noche dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white",
     );
   return (
     <nav className="flex flex-1 flex-col gap-6 overflow-y-auto" onClick={alNavegar}>
@@ -45,17 +46,17 @@ function Navegacion({ alNavegar }: { alNavegar?: () => void }) {
       </div>
       {!!vacantes?.length && (
         <div>
-          <p className="mb-1.5 px-2.5 text-[11px] font-medium uppercase tracking-wider text-zinc-400">Procesos activos</p>
+          <p className="mb-1.5 px-2.5 text-[11px] font-extrabold uppercase italic tracking-wider text-zinc-500">Procesos activos</p>
           <div className="space-y-0.5">
-            {vacantes.map((v) => (
-              <Link key={v.id} to={`/app/vacantes/${v.id}/ranking`}
+            {vacantes.map((v, i) => (
+              <Link key={v.id} style={{ "--i": i } as CSSProperties} to={`/app/vacantes/${v.id}/ranking`}
                 className={clsx(
-                  "group flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm transition",
-                  String(v.id) === id ? "bg-marca-50 text-marca-700 dark:bg-marca-950 dark:text-marca-300"
-                    : "text-zinc-600 hover:bg-zinc-200/60 dark:text-zinc-400 dark:hover:bg-zinc-800/70",
+                  "a-entra group flex items-center gap-2 border-l-4 px-2.5 py-1.5 text-sm font-medium transition-colors",
+                  String(v.id) === id ? "border-coral bg-azul-claro font-bold text-noche dark:bg-marca-950 dark:text-white"
+                    : "border-transparent text-zinc-600 hover:border-zinc-300 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800",
                 )}>
                 <span className="truncate">{v.titulo.split("·")[0].trim()}</span>
-                <span className="ml-auto rounded-md bg-zinc-200/70 px-1.5 text-[11px] tabular-nums text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
+                <span className="ml-auto border-[1.5px] border-(--tinta) bg-white px-1.5 text-[11px] font-bold tabular-nums text-noche dark:bg-zinc-950 dark:text-zinc-200">
                   {v.evaluados ?? 0}
                 </span>
               </Link>
@@ -77,9 +78,9 @@ function BarraLateral({ alNavegar }: { alNavegar?: () => void }) {
       <Navegacion alNavegar={alNavegar} />
       <div className="space-y-3">
         <EstadoLLM />
-        <p className="flex gap-2 px-1 text-xs leading-relaxed text-zinc-500">
+        <p className="flex gap-2 px-1 text-xs font-medium leading-relaxed text-zinc-500">
           <UserCheck className="mt-0.5 size-3.5 shrink-0" />
-          <span>La IA ordena y justifica. <strong className="font-medium text-zinc-700 dark:text-zinc-300">La decisión final es de una persona.</strong></span>
+          <span>La IA ordena y justifica. <strong className="font-bold text-noche dark:text-zinc-100">La decisión final es de una persona.</strong></span>
         </p>
       </div>
     </div>
@@ -88,29 +89,35 @@ function BarraLateral({ alNavegar }: { alNavegar?: () => void }) {
 
 export function AppLayout() {
   const [abierto, setAbierto] = useState(false);
+  const { pathname } = useLocation();
   return (
-    <div className="min-h-dvh lg:pl-64">
-      <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-zinc-200 bg-zinc-100/60 lg:block dark:border-zinc-800 dark:bg-zinc-900/40">
+    <div className="relative min-h-dvh lg:pl-64">
+      <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 border-r-2 border-(--tinta) bg-white lg:block dark:bg-zinc-900">
         <BarraLateral />
       </aside>
 
       {/* móvil */}
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-zinc-200 bg-white/80 px-4 py-2.5 backdrop-blur lg:hidden dark:border-zinc-800 dark:bg-zinc-950/80">
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b-2 border-(--tinta) bg-white px-4 py-2.5 lg:hidden dark:bg-zinc-900">
         <Link to="/"><Logo /></Link>
         <button className="btn-fantasma px-2" onClick={() => setAbierto(true)} aria-label="Abrir menú"><Menu className="size-5" /></button>
       </header>
       {abierto && (
         <div className="fixed inset-0 z-40 lg:hidden">
-          <div className="absolute inset-0 bg-zinc-950/40" onClick={() => setAbierto(false)} />
-          <div className="absolute inset-y-0 left-0 w-72 bg-zinc-50 shadow-xl dark:bg-zinc-900">
+          <div className="absolute inset-0 animate-[hm-sube_.2s_ease-out_both] bg-noche/50" onClick={() => setAbierto(false)} />
+          <div className="a-entra absolute inset-y-0 left-0 w-72 border-r-2 border-(--tinta) bg-white shadow-xl dark:bg-zinc-900">
             <button className="btn-fantasma absolute right-3 top-3 px-2" onClick={() => setAbierto(false)} aria-label="Cerrar menú"><X className="size-5" /></button>
             <BarraLateral alNavegar={() => setAbierto(false)} />
           </div>
         </div>
       )}
 
-      <main className="mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-8">
-        <Outlet />
+      {/* franja azul y bloque coral: la firma geométrica de la marca */}
+      <span aria-hidden className="pointer-events-none absolute right-6 top-0 hidden h-3 w-44 bg-azul sm:block lg:right-16" />
+      <span aria-hidden className="pointer-events-none fixed -bottom-10 -right-10 hidden size-28 rounded-full border-[14px] border-coral/80 xl:block" />
+      <main className="relative mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-10">
+        <div key={pathname} className="a-sube">
+          <Outlet />
+        </div>
       </main>
     </div>
   );
@@ -126,23 +133,24 @@ export function PestanasVacante({ id, titulo, evaluados }: { id: number; titulo:
   ];
   return (
     <div className="mb-6">
-      <div className="mb-3 flex items-center gap-1.5 text-sm text-zinc-500">
+      <div className="mb-2 flex items-center gap-1.5 text-sm font-medium text-zinc-500">
         <Link to="/app/vacantes" className="hover:text-zinc-900 dark:hover:text-zinc-200">Vacantes</Link>
         <ChevronRight className="size-3.5" />
-        <span className="truncate text-zinc-900 dark:text-zinc-200">{titulo}</span>
+        <span className="truncate text-noche dark:text-zinc-200">{titulo.split("·")[1]?.trim()}</span>
       </div>
-      <div className="flex gap-1 overflow-x-auto border-b border-zinc-200 dark:border-zinc-800">
+      <Palabras como="h1" texto={titulo.split("·")[0].trim().toUpperCase()} className="mb-4 font-titulo text-5xl" />
+      <div className="flex gap-2 overflow-x-auto border-b-2 border-(--tinta)">
         {pasos.map((p) => {
           const activo = pathname === p.a;
           return (
             <Link key={p.a} to={p.a}
               className={clsx(
-                "-mb-px flex shrink-0 items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-medium transition",
-                activo ? "border-marca-600 text-marca-700 dark:border-marca-400 dark:text-marca-300"
-                  : "border-transparent text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200",
+                "-mb-0.5 flex shrink-0 items-center gap-2 border-b-[5px] px-3 py-2.5 text-sm font-extrabold uppercase tracking-wide transition-colors",
+                activo ? "border-coral text-noche dark:text-white"
+                  : "border-transparent text-zinc-500 hover:border-zinc-300 hover:text-noche dark:hover:text-white",
               )}>
-              <span className={clsx("flex size-5 items-center justify-center rounded-full text-[11px]",
-                activo ? "bg-marca-600 text-white" : "bg-zinc-200 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400")}>{p.n}</span>
+              <span className={clsx("flex size-6 items-center justify-center border-2 font-titulo text-base transition-colors",
+                activo ? "border-(--tinta) bg-coral text-noche shadow-xs" : "border-zinc-300 text-zinc-500 dark:border-zinc-600")}>{p.n}</span>
               {p.texto}
               {p.n === 3 && !!evaluados && <span className="text-xs tabular-nums text-zinc-400">{evaluados}</span>}
             </Link>

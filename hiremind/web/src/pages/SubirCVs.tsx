@@ -1,7 +1,8 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
 import { ArrowRight, CircleCheck, EyeOff, FileText, FileUp, LoaderCircle, Lock, ScanLine, TriangleAlert, X } from "lucide-react";
-import { useRef, useState, type DragEvent } from "react";
+import { useRef, useState, type CSSProperties, type DragEvent } from "react";
+import { Cifra } from "../components/anim";
 import { Link, useParams } from "react-router";
 import { api, ErrorApi, type ResultadoCV } from "../api";
 import { PestanasVacante } from "../components/Layout";
@@ -63,14 +64,16 @@ export default function SubirCVs() {
             onDrop={soltar}
             onClick={() => input.current?.click()}
             className={clsx(
-              "flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-12 text-center transition",
-              arrastrando ? "border-marca-500 bg-marca-50 dark:bg-marca-950/40" : "border-zinc-300 bg-white hover:border-marca-400 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800/60",
+              "group relative flex cursor-pointer flex-col items-center justify-center overflow-hidden border-[3px] border-dashed border-(--tinta) px-6 py-14 text-center transition-[background-color,transform,box-shadow] duration-200 ease-rebote",
+              arrastrando ? "scale-[1.01] border-solid bg-menta-claro shadow-md dark:bg-marca-950" : "bg-white hover:bg-menta-claro/60 dark:bg-zinc-900 dark:hover:bg-zinc-800",
             )}>
-            <div className="mb-3 flex size-12 items-center justify-center rounded-full bg-marca-50 text-marca-600 dark:bg-marca-950 dark:text-marca-300">
-              <FileUp className="size-6" />
+            <span aria-hidden className="absolute -right-5 -top-5 size-14 rounded-full border-[9px] border-coral" />
+            <span aria-hidden className="absolute bottom-0 left-8 h-2 w-24 bg-azul" />
+            <div className={clsx("mb-4 flex size-14 items-center justify-center border-2 border-(--tinta) bg-menta text-noche shadow-xs transition-transform duration-300 ease-rebote group-hover:-translate-y-1 group-hover:rotate-3", arrastrando && "-translate-y-2 rotate-6")}>
+              <FileUp className="size-7" />
             </div>
-            <p className="font-medium">Arrastre las hojas de vida aquí</p>
-            <p className="mt-1 text-sm text-zinc-500">o haga clic para elegirlas · solo PDF</p>
+            <p className="font-titulo text-3xl">{arrastrando ? "Suéltelas aquí" : "Arrastre las hojas de vida aquí"}</p>
+            <p className="mt-1 text-sm font-medium text-zinc-500">o haga clic para elegirlas · solo PDF</p>
             <input ref={input} type="file" accept="application/pdf,.pdf" multiple hidden onChange={(e) => { agregar(e.target.files); e.target.value = ""; }} />
           </div>
 
@@ -78,41 +81,43 @@ export default function SubirCVs() {
 
           {filas.length > 0 && (
             <section className="tarjeta">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
-                <div className="text-sm">
-                  <span className="font-semibold">{filas.length} archivos</span>
-                  {trabajando && <span className="text-zinc-500"> · procesando {hechos + 1} de {filas.length}</span>}
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-(--tinta) px-4 py-3">
+                <div className="flex items-baseline gap-2">
+                  <span className="font-titulo text-2xl">{filas.length} archivos</span>
+                  {trabajando && <span className="text-sm font-semibold text-zinc-500">procesando {hechos + 1} de {filas.length}</span>}
                 </div>
                 <div className="flex gap-2">
                   {!trabajando && pendientes > 0 && (
                     <button className="btn-fantasma py-1.5 text-xs" onClick={() => setFilas((fs) => fs.filter((f) => f.estado !== "pendiente"))}>Quitar pendientes</button>
                   )}
                   <button className="btn-primario py-1.5 text-xs" onClick={evaluar} disabled={trabajando || !pendientes || !llmOk}>
-                    {trabajando ? <><LoaderCircle className="size-3.5 animate-spin" /> Evaluando…</> : `Evaluar ${pendientes || ""}`}
+                    {trabajando ? <><LoaderCircle className="size-3.5 animate-spin" /> Evaluando {hechos + 1} de {filas.length}…</> : <>Evaluar {pendientes || ""} <ArrowRight className="flecha size-3.5" /></>}
                   </button>
                 </div>
               </div>
               {trabajando && (
-                <div className="h-1 bg-zinc-100 dark:bg-zinc-800">
-                  <div className="h-full bg-marca-500 transition-all" style={{ width: `${(hechos / filas.length) * 100}%` }} />
+                <div className="h-3 border-b-2 border-(--tinta) bg-azul-claro dark:bg-zinc-800">
+                  <div className="h-full border-r-2 border-(--tinta) bg-menta transition-[width] duration-700 ease-rebote" style={{ width: `${Math.max(2, (hechos / filas.length) * 100)}%` }} />
                 </div>
               )}
-              <ul className="divide-y divide-zinc-100 dark:divide-zinc-800">
+              <ul className="divide-y-2 divide-zinc-100 dark:divide-zinc-800">
                 {filas.map((f, i) => {
                   const r = f.resultado;
                   return (
-                    <li key={f.archivo.name} className="flex items-center gap-3 px-4 py-3">
-                      <div className={clsx("flex size-9 shrink-0 items-center justify-center rounded-lg",
-                        r?.estado === "revision_manual" || f.estado === "error" ? "bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400"
-                          : r ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400" : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800")}>
-                        {f.estado === "procesando" ? <LoaderCircle className="size-4 animate-spin" />
+                    <li key={f.archivo.name} style={{ "--i": i } as CSSProperties}
+                      className={clsx("a-entra flex items-center gap-3 px-4 py-3 transition-colors", f.estado === "procesando" && "bg-azul-claro dark:bg-marca-950")}>
+                      <div key={f.estado} className={clsx("flex size-10 shrink-0 items-center justify-center border-2 border-(--tinta)",
+                        f.estado === "procesando" ? "escaneo bg-white text-noche" : "a-pop",
+                        r?.estado === "revision_manual" || f.estado === "error" ? "bg-ambar text-noche"
+                          : r ? "bg-menta text-noche" : f.estado !== "procesando" && "bg-white text-zinc-500 dark:bg-zinc-900")}>
+                        {f.estado === "procesando" ? <FileText className="size-5" />
                           : r?.estado === "revision_manual" ? <ScanLine className="size-4" />
                           : f.estado === "error" ? <TriangleAlert className="size-4" />
                           : r ? <CircleCheck className="size-4" /> : <FileText className="size-4" />}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium">{r?.nombre || f.archivo.name}</p>
-                        <p className="truncate text-xs text-zinc-500">
+                        <p className="truncate text-sm font-bold">{r?.nombre || f.archivo.name}</p>
+                        <p className="truncate text-xs font-medium text-zinc-500">
                           {f.estado === "pendiente" && `${f.archivo.name} · ${(f.archivo.size / 1024).toFixed(0)} KB`}
                           {f.estado === "procesando" && "Leyendo, extrayendo y verificando citas…"}
                           {f.estado === "error" && f.error}
@@ -126,8 +131,8 @@ export default function SubirCVs() {
                         </p>
                       </div>
                       {r?.estado === "evaluado" && (
-                        <div className="w-28 shrink-0 text-right">
-                          <span className="text-sm font-semibold tabular-nums">{fmt(r.puntaje)}</span>
+                        <div className="a-pop w-28 shrink-0 text-right">
+                          <span className="font-titulo text-2xl leading-none"><Cifra valor={r.puntaje} /></span>
                           <BarraPuntaje puntaje={r.puntaje} className="mt-1" />
                         </div>
                       )}
@@ -147,30 +152,30 @@ export default function SubirCVs() {
 
         <aside className="space-y-4 lg:sticky lg:top-8 lg:self-start">
           <div className="tarjeta p-4">
-            <h3 className="text-sm font-semibold">Qué pasa con cada CV</h3>
-            <ol className="mt-3 space-y-2.5 text-xs text-zinc-600 dark:text-zinc-400">
+            <h3 className="font-titulo text-2xl">Qué pasa con cada CV</h3>
+            <ol className="mt-3 space-y-2.5 text-xs font-medium text-zinc-600 dark:text-zinc-300">
               {[
                 "Se lee el PDF. Si es escaneado, va a revisión manual.",
                 "Se quitan edad, estado civil, nacionalidad y otros datos personales.",
                 "El modelo extrae los datos con una cita textual del CV.",
                 "Python verifica cada cita y calcula el puntaje.",
               ].map((t, i) => (
-                <li key={t} className="flex gap-2.5">
-                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-[11px] font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">{i + 1}</span>
+                <li key={t} className="a-entra flex gap-2.5" style={{ "--i": i + 2 } as CSSProperties}>
+                  <span className={clsx("flex size-6 shrink-0 items-center justify-center border-2 border-(--tinta) font-titulo text-base text-noche", ["bg-menta", "bg-coral", "bg-azul", "bg-ambar"][i])}>{i + 1}</span>
                   {t}
                 </li>
               ))}
             </ol>
-            <p className="mt-4 flex items-center gap-1.5 border-t border-zinc-100 pt-3 text-xs text-zinc-500 dark:border-zinc-800">
+            <p className="mt-4 flex items-center gap-1.5 border-t-2 border-zinc-100 pt-3 text-xs font-semibold text-zinc-500 dark:border-zinc-800">
               <Lock className="size-3.5" /> Los archivos no salen de este equipo.
             </p>
           </div>
 
           {listos.length > 0 && !trabajando && (
-            <div className="tarjeta p-4">
-              <p className="text-sm font-semibold">{listos.length} procesados</p>
+            <div className="tarjeta a-pop bg-menta-claro p-4 dark:bg-zinc-900">
+              <p className="font-titulo text-3xl"><Cifra valor={listos.length} /> procesados</p>
               {promedio != null && <p className="mt-0.5 text-xs text-zinc-500">Promedio {fmt(Math.round(promedio * 10) / 10)} s por CV</p>}
-              <Link to={`/app/vacantes/${vid}/ranking`} className="btn-primario mt-3 w-full">Ver ranking <ArrowRight className="size-4" /></Link>
+              <Link to={`/app/vacantes/${vid}/ranking`} className="btn-primario mt-3 w-full">Ver ranking <ArrowRight className="flecha size-4" /></Link>
             </div>
           )}
         </aside>

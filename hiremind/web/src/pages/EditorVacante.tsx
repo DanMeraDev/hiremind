@@ -1,12 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
 import { Check, Plus, ShieldCheck, Trash2, X } from "lucide-react";
-import { useEffect, useState, type KeyboardEvent } from "react";
+import { useEffect, useState, type CSSProperties, type KeyboardEvent } from "react";
 import { useNavigate, useParams } from "react-router";
 import {
   api, ErrorApi, NOMBRE_IDIOMA, NOMBRE_NIVEL, NOMBRE_TIPO,
   type Criterio, type NivelFormacion, type NivelIdioma, type TipoCriterio, type Vacante,
 } from "../api";
+import { Cifra } from "../components/anim";
 import { PestanasVacante } from "../components/Layout";
 import { Aviso, Cargando, Encabezado } from "../components/ui";
 
@@ -31,10 +32,10 @@ function Palabras({ valor, onChange }: { valor: string[]; onChange: (v: string[]
   return (
     <div className="campo flex min-h-10 flex-wrap items-center gap-1.5 py-1.5">
       {valor.map((p) => (
-        <span key={p} className="inline-flex items-center gap-1 rounded-md bg-marca-50 py-0.5 pl-2 pr-1 text-xs font-medium text-marca-700 dark:bg-marca-950 dark:text-marca-300">
+        <span key={p} className="a-pop inline-flex items-center gap-1 border-[1.5px] border-(--tinta) bg-menta-claro py-0.5 pl-2 pr-1 text-xs font-bold text-noche dark:bg-marca-950 dark:text-marca-100">
           {p}
           <button type="button" onClick={() => onChange(valor.filter((x) => x !== p))} aria-label={`Quitar ${p}`}
-            className="rounded p-0.5 hover:bg-marca-100 dark:hover:bg-marca-900"><X className="size-3" /></button>
+            className="p-0.5 transition-transform hover:rotate-90 hover:bg-coral hover:text-noche"><X className="size-3" /></button>
         </span>
       ))}
       <input value={texto} onChange={(e) => setTexto(e.target.value)} onKeyDown={tecla} onBlur={agregar}
@@ -43,8 +44,11 @@ function Palabras({ valor, onChange }: { valor: string[]; onChange: (v: string[]
   );
 }
 
-function TarjetaCriterio({ c, onChange, onBorrar, puedeBorrar }: {
-  c: Criterio; onChange: (c: Criterio) => void; onBorrar: () => void; puedeBorrar: boolean;
+// colores de los criterios en la barra de pesos (paleta de la marca A)
+const COLORES_PESO = ["#2EE5A7", "#FD696E", "#5383FF", "#FFB547", "#B3C8FF", "#FFC7C9"];
+
+function TarjetaCriterio({ c, onChange, onBorrar, puedeBorrar, i }: {
+  c: Criterio; onChange: (c: Criterio) => void; onBorrar: () => void; puedeBorrar: boolean; i: number;
 }) {
   const set = <K extends keyof Criterio>(k: K, v: Criterio[K]) => onChange({ ...c, [k]: v });
   const cambiarTipo = (tipo: TipoCriterio) => onChange({
@@ -55,7 +59,7 @@ function TarjetaCriterio({ c, onChange, onBorrar, puedeBorrar }: {
     nivel_idioma: tipo === "idioma" ? c.nivel_idioma ?? "intermedio" : null,
   });
   return (
-    <div className="tarjeta p-4">
+    <div className="tarjeta a-sube relative border-l-8 p-4" style={{ "--i": i, borderLeftColor: COLORES_PESO[i % COLORES_PESO.length] } as CSSProperties}>
       <div className="grid gap-3 sm:grid-cols-12">
         <div className="sm:col-span-3">
           <label className="etiqueta">Tipo</label>
@@ -113,7 +117,7 @@ function TarjetaCriterio({ c, onChange, onBorrar, puedeBorrar }: {
       </div>
       {puedeBorrar && (
         <div className="mt-3 flex justify-end">
-          <button type="button" onClick={onBorrar} className="btn-fantasma py-1 text-xs text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-950/50">
+          <button type="button" onClick={onBorrar} className="btn-fantasma py-1 text-xs text-rose-700 hover:bg-coral-claro hover:text-rose-800 dark:text-rose-300 dark:hover:bg-rose-950">
             <Trash2 className="size-3.5" /> Quitar criterio
           </button>
         </div>
@@ -176,13 +180,13 @@ export default function EditorVacante() {
 
           <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold">Criterios de evaluación</h2>
+              <h2 className="font-titulo text-3xl">Criterios de evaluación</h2>
               <button type="button" className="btn-secundario py-1.5 text-xs" onClick={() => setV({ ...v, criterios: [...v.criterios, nuevoCriterio()] })}>
                 <Plus className="size-3.5" /> Agregar criterio
               </button>
             </div>
             {v.criterios.map((c, i) => (
-              <TarjetaCriterio key={c.id} c={c} onChange={(n) => setCriterio(i, n)} puedeBorrar={v.criterios.length > 1}
+              <TarjetaCriterio key={c.id} i={i} c={c} onChange={(n) => setCriterio(i, n)} puedeBorrar={v.criterios.length > 1}
                 onBorrar={() => setV({ ...v, criterios: v.criterios.filter((_, j) => j !== i) })} />
             ))}
           </section>
@@ -191,19 +195,20 @@ export default function EditorVacante() {
         <aside className="space-y-4 lg:sticky lg:top-8 lg:self-start">
           <div className="tarjeta p-4">
             <div className="flex items-baseline justify-between">
-              <span className="text-sm font-medium">Suma de pesos</span>
-              <span className={clsx("text-lg font-semibold tabular-nums", total === 100 ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400")}>
-                {total} %
+              <span className="text-[11px] font-extrabold uppercase italic tracking-wider text-zinc-500">Suma de pesos</span>
+              <span key={total === 100 ? "ok" : "no"} className={clsx("a-pop border-2 border-(--tinta) px-2 font-titulo text-3xl text-noche", total === 100 ? "bg-menta" : "bg-ambar")}>
+                <Cifra valor={total} ms={400} /> %
               </span>
             </div>
-            <div className="mt-3 flex h-2 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
+            <div className="mt-3 flex h-4 overflow-hidden border-2 border-(--tinta) bg-zinc-100 dark:bg-zinc-800">
               {v.criterios.map((c, i) => (
-                <div key={c.id} title={`${c.nombre || "Sin nombre"}: ${c.peso}%`} style={{ width: `${Math.min(c.peso, 100)}%` }}
-                  className={clsx("h-full border-r border-white last:border-0 dark:border-zinc-900", ["bg-marca-600", "bg-marca-400", "bg-sky-500", "bg-teal-500", "bg-violet-500", "bg-marca-300"][i % 6])} />
+                <div key={c.id} title={`${c.nombre || "Sin nombre"}: ${c.peso}%`}
+                  style={{ width: `${Math.min(c.peso, 100)}%`, background: COLORES_PESO[i % COLORES_PESO.length] }}
+                  className="h-full border-r-2 border-(--tinta) transition-[width] duration-500 ease-rebote last:border-r-0" />
               ))}
             </div>
-            <p className="mt-2 text-xs text-zinc-500">{total === 100 ? "Los pesos están completos." : `Deben sumar 100 % (faltan ${100 - total}).`}</p>
-            <p className="mt-3 border-t border-zinc-100 pt-3 text-xs text-zinc-500 dark:border-zinc-800">
+            <p className="mt-2 text-xs font-semibold text-zinc-500">{total === 100 ? "Los pesos están completos." : `Deben sumar 100 % (faltan ${100 - total}).`}</p>
+            <p className="mt-3 border-t-2 border-zinc-100 pt-3 text-xs text-zinc-500 dark:border-zinc-800">
               Puntaje = Σ peso × resultado. Cumple vale 1, parcial 0,5 y no identificado 0.
             </p>
           </div>
@@ -226,7 +231,7 @@ export default function EditorVacante() {
               {guardado ? <><Check className="size-4" /> Guardado</> : vid ? "Guardar cambios" : "Crear y subir hojas de vida"}
             </button>
             {vid != null && (
-              <button type="button" className="btn-fantasma w-full text-rose-600 dark:text-rose-400"
+              <button type="button" className="btn-fantasma w-full text-rose-700 dark:text-rose-300"
                 onClick={() => confirm("¿Eliminar la vacante y todas sus evaluaciones?") && borrar.mutate()}>
                 <Trash2 className="size-4" /> Eliminar vacante
               </button>
