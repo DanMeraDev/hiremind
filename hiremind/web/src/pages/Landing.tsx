@@ -489,36 +489,31 @@ export default function Landing() {
         <span aria-hidden className="absolute bottom-0 right-[18%] h-10 w-60 bg-noche" />
         <span aria-hidden className="absolute -bottom-24 -left-24 size-56 rounded-full border-[36px] border-coral" />
         <span aria-hidden className="absolute right-10 top-28 hidden h-4 w-32 bg-azul lg:block" />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-16 px-4 sm:px-6 lg:grid-cols-[1.1fr_1fr]">
+        <div className="relative mx-auto grid max-w-6xl items-center gap-20 px-4 sm:px-6 lg:grid-cols-[1fr_1fr] lg:gap-16">
           <div>
             <span className="a-sube inline-flex items-center gap-2 border-2 border-noche bg-white px-3 py-1 text-xs font-extrabold uppercase italic tracking-wider">
-              <Lock className="size-3.5" /> IA local · para PYMEs ecuatorianas
+              <Lock className="size-3.5" /> IA local · para PYMEs
             </span>
-            <Palabras como="h1" texto="CONTRATE CON *CRITERIO,* NO A CIEGAS." retraso={150} claseAcento="text-white [-webkit-text-stroke:2px_#0A0147] [paint-order:stroke_fill]"
-              className="mt-6 font-titulo text-[18vw] leading-[0.85] sm:text-8xl lg:text-[6.6rem]" />
-            <p className="a-sube mt-6 max-w-xl text-lg font-semibold leading-relaxed" style={{ "--i": 10 } as CSSProperties}>
-              HireMind lee las hojas de vida, las compara con su vacante y entrega un ranking justificado con citas del propio CV.
-              Todo en su computador. <span className="bg-white px-1">La IA ordena; usted decide.</span>
+            <Palabras como="h1" texto="CONTRATE CON *CRITERIO.*" retraso={150} claseAcento="text-white [-webkit-text-stroke:2px_#0A0147] [paint-order:stroke_fill]"
+              className="mt-6 font-titulo text-[22vw] leading-[0.85] sm:text-9xl lg:text-[6.4rem]" />
+            <p className="a-sube mt-6 max-w-md text-xl font-semibold leading-snug" style={{ "--i": 8 } as CSSProperties}>
+              Ranking de hojas de vida con evidencia. <span className="bg-white px-1">La IA ordena; usted decide.</span>
             </p>
-            <div className="a-sube mt-8 flex flex-wrap gap-4" style={{ "--i": 12 } as CSSProperties}>
+            <div className="a-sube mt-8 flex flex-wrap gap-4" style={{ "--i": 10 } as CSSProperties}>
               <Link to="/app" className="btn-primario group px-6 py-3 text-base"><Etiqueta>Probar la demo</Etiqueta> <ArrowRight className="flecha size-5" /></Link>
               <button onClick={() => irA("como")} className="btn-secundario group px-6 py-3 text-base"><Etiqueta>Cómo funciona</Etiqueta></button>
             </div>
-            <dl className="mt-12 grid max-w-lg grid-cols-3 border-2 border-noche bg-white">
-              {[
-                [<Cifra key="a" valor={9.4} decimales={1} sufijo=" s" ms={1400} />, "por hoja de vida*"],
-                [<Cifra key="b" valor={0} />, "datos a la nube"],
-                [<Cifra key="c" valor={100} sufijo=" %" ms={1400} />, "puntajes con evidencia"],
-              ].map(([v, t], i) => (
-                <div key={i} className={clsx("px-3 py-3 sm:px-4", i < 2 && "border-r-2 border-noche")}>
-                  <dt className="font-titulo text-4xl leading-none">{v}</dt>
-                  <dd className="mt-1 text-[11px] font-bold leading-tight text-zinc-600">{t}</dd>
-                </div>
-              ))}
-            </dl>
-            <p className="mt-2 text-[11px] font-semibold text-noche/80">* Promedio medido con Qwen3-4B en una GPU de 8 GB, con los CV de prueba incluidos.</p>
           </div>
-          <EscenaRanking />
+          <div className="relative">
+            <EscenaRanking />
+            {/* cifras como etiquetas flotantes en vez de texto */}
+            <span className="a-pop absolute -right-2 -top-7 z-10 rotate-3 border-2 border-noche bg-coral px-3 py-1.5 text-noche shadow-[4px_4px_0_0_#0A0147] sm:-right-6" style={{ "--i": 14 } as CSSProperties}>
+              <span className="flota block"><b className="font-titulo text-3xl leading-none">~10 s</b> <span className="text-[11px] font-extrabold uppercase">por CV</span></span>
+            </span>
+            <span className="a-pop absolute -bottom-9 right-2 z-10 -rotate-3 border-2 border-noche bg-white px-3 py-1.5 text-noche shadow-[4px_4px_0_0_#0A0147]" style={{ "--i": 16 } as CSSProperties}>
+              <span className="flota flex items-center gap-1.5 [animation-delay:-1.5s]"><Lock className="size-4" /><b className="font-titulo text-3xl leading-none">0</b><span className="text-[11px] font-extrabold uppercase leading-tight">datos<br />a la nube</span></span>
+            </span>
+          </div>
         </div>
       </section>
 

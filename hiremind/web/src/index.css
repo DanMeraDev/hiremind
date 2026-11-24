@@ -186,6 +186,7 @@
 @keyframes hm-traza { from { stroke-dashoffset: var(--largo, 40); } to { stroke-dashoffset: 0; } }
 @keyframes hm-flecha { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(4px); } }
 @keyframes hm-cinta { to { transform: translateX(-50%); } }
+@keyframes hm-flota { 50% { transform: translateY(-6px); } }
 @keyframes hm-late { 50% { transform: scale(1.6); opacity: 0; } }
 
 /* --i = posición en la lista: entra escalonado */
@@ -197,6 +198,7 @@
 .a-destello { animation: hm-destello 0.9s ease-out; }
 .a-traza { stroke-dasharray: var(--largo, 40); animation: hm-traza 0.5s var(--ease-salida) both; animation-delay: var(--retraso, 0ms); }
 .a-flecha { animation: hm-flecha 0.9s ease-in-out infinite; }
+.flota { animation: hm-flota 3s ease-in-out infinite; }
 .btn:hover .flecha { animation: hm-flecha 0.6s ease-in-out infinite; }
 
 /* hoja que se escanea mientras el agente trabaja */
