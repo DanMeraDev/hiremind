@@ -50,6 +50,27 @@ Tema claro y oscuro; se adapta a celular.
 
 El orden de los pasos está en `agente/pipeline.py`. Python, no el modelo, decide el nivel de formación (a partir del título), si una carrera está en curso, las fechas de experiencia (a partir de la cita) y si una habilidad viene solo de un proyecto o curso.
 
+## Modelo de negocio (híbrido)
+
+**Licencia base perpetua + expansiones anuales por suscripción.** La PYME compra el programa una sola vez y, si crece, amplía la capacidad con una suscripción anual. Mientras el volumen sea bajo, su costo mensual es $0. Lema comercial: *"Compra hoy, escala cuando crezcas"*.
+
+| Componente | Modalidad | Precio (USD) | Alcance |
+|---|---|---|---|
+| Licencia base perpetua | Pago único | $299 | 1 equipo · hasta 3 vacantes activas · 60 CV por vacante (máx. 300 CV/año) · Qwen 4B local, sin tokens ni internet |
+| Setup remoto | Pago único, obligatorio | $75 | Auditoría de hardware, instalación remota de Python, LM Studio y el modelo, 45 min de capacitación |
+| Setup presencial | Pago único, opcional | $120 | Instalación en la oficina, pruebas con CV reales y capacitación presencial |
+| Plan Crecimiento | Suscripción anual | $149/año | Hasta 12 vacantes activas y 1 500 CV/año · hasta 3 equipos con respaldos cruzados · actualización anual del modelo (p. ej. Qwen 7B) · soporte preventivo |
+| Plan Escala | Suscripción anual | $299/año | Sin límite local de vacantes ni CV · hasta 5 equipos · respaldo automático · nube opcional (Gemini Flash) para campañas masivas · soporte prioritario |
+| Soporte puntual | Bajo demanda | $85 | Para la licencia base sin expansión activa |
+
+**Ticket de entrada:** $374 (licencia base + setup remoto), pago único. Se puede pagar con tarjeta diferida (3 a 6 meses sin intereses) o 50 % al contratar y 50 % al terminar la instalación.
+
+**¿Por qué anual y no mensual?** El crecimiento de una PYME se consolida año a año. Además, contrata por temporadas, y una mensualidad en meses sin vacantes se cancela. Un pago anual se presupuesta una vez y cuesta menos que doce cuotas.
+
+**Ingresos complementarios:** reinstalación por nuevo hardware ($50 a $85), actualización puntual de modelos ($60 a $100) y capacitación a nuevos usuarios ($40). La conversión a expansión anual ocurre cuando la PYME llega al tope de su licencia base.
+
+> En el prototipo actual los cupos de la licencia base **no están implementados**: la app no limita vacantes ni CV, y no avisa cuando se alcanza el tope.
+
 ## Requisitos
 
 - PC con 16 GB de RAM (con GPU es más rápido, pero no es obligatoria)

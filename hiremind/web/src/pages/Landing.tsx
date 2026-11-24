@@ -4,7 +4,7 @@
 import clsx from "clsx";
 import Lenis from "lenis";
 import {
-  ArrowRight, BadgeCheck, Download, EyeOff, FileText, ListChecks, Lock, Quote, ScanLine, ShieldCheck, Star, Trophy, UserCheck,
+  ArrowRight, BadgeCheck, Check, CreditCard, Download, EyeOff, FileText, ListChecks, Lock, Quote, ScanLine, ShieldCheck, Star, Trophy, UserCheck,
 } from "lucide-react";
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { Link } from "react-router";
@@ -303,12 +303,109 @@ const BENEFICIOS = [
 ];
 
 const PREGUNTAS = [
-  ["¿Necesito internet o una cuenta en la nube?", "No. El modelo de lenguaje corre en el mismo computador con LM Studio. Las hojas de vida nunca salen de su oficina."],
+  ["¿Necesito internet o una cuenta en la nube?", "No. El modelo de lenguaje corre en el mismo computador con LM Studio y las hojas de vida nunca salen de su oficina. Solo el Plan Escala ofrece, si usted lo activa, procesar en la nube campañas masivas."],
+  ["¿Tengo que pagar cada mes?", "No. La licencia base se paga una sola vez y es suya para siempre. Si su empresa crece y necesita más vacantes o más CV, puede activar una expansión anual; mientras no la necesite, su costo mensual es $0."],
+  ["¿Por qué la expansión es anual y no mensual?", "Porque las PYMEs contratan por temporadas. Un pago anual cubre los picos de contratación, se presupuesta una sola vez y cuesta menos que doce cuotas; no paga nada en los meses sin vacantes."],
   ["¿La IA decide a quién contratar?", "No. Ordena y justifica con evidencias. Ningún CV se descarta automáticamente y la decisión final es siempre de una persona."],
   ["¿Qué pasa si la IA se equivoca?", "Cada dato tiene una cita del CV que usted puede leer. Si un criterio está mal evaluado, lo corrige con un clic y el puntaje se recalcula."],
   ["¿Qué computador necesito?", "Una PC de oficina con 16 GB de RAM. Con tarjeta gráfica cada CV tarda alrededor de 10 segundos; sin ella, más."],
   ["¿Cómo se evita la discriminación?", "La edad, el estado civil, la nacionalidad y otros datos personales se eliminan antes del análisis, y no se permiten criterios sobre ellos."],
 ];
+
+/* ───────────────────────── planes: base perpetua + expansiones anuales ───────────────────────── */
+
+const PLANES = [
+  {
+    nombre: "Licencia base", precio: 299, periodo: "pago único", nota: "Para empezar", color: "bg-menta", destacado: true,
+    items: ["Suya para siempre, en 1 equipo", "Hasta 3 vacantes activas a la vez", "60 CV por vacante · 300 CV al año", "Modelo local Qwen 4B, sin internet", "$0 en tokens: sin costo por uso"],
+  },
+  {
+    nombre: "Plan Crecimiento", precio: 149, periodo: "por año", nota: "Cuando su equipo crece", color: "bg-azul", destacado: false,
+    items: ["Hasta 12 vacantes activas a la vez", "Hasta 1 500 CV al año", "Hasta 3 equipos con respaldos cruzados", "Actualización anual del modelo (p. ej. Qwen 7B)", "Soporte técnico preventivo"],
+  },
+  {
+    nombre: "Plan Escala", precio: 299, periodo: "por año", nota: "Alto volumen", color: "bg-coral", destacado: false,
+    items: ["Vacantes y CV sin límite local", "Hasta 5 equipos y respaldo automático", "Nube opcional para campañas masivas", "La misma interfaz, sin reinstalar", "Soporte prioritario"],
+  },
+];
+
+const SERVICIOS = [
+  ["Setup remoto", "$75", "Obligatorio · auditoría del equipo, instalación remota y 45 min de capacitación"],
+  ["Setup presencial", "$120", "Opcional · instalación en su oficina y pruebas con sus CV reales"],
+  ["Soporte puntual", "$85", "Bajo demanda · para la licencia base sin expansión activa"],
+];
+
+function Planes() {
+  return (
+    <section id="planes" className="relative overflow-hidden bg-zinc-50 dark:bg-zinc-900">
+      <span aria-hidden className="absolute left-[8%] top-0 h-4 w-44 bg-menta" />
+      <span aria-hidden className="absolute -right-20 bottom-24 hidden size-52 rounded-full border-[32px] border-azul lg:block" />
+      <div className="relative mx-auto max-w-6xl px-4 py-24 sm:px-6">
+        <p className="text-sm font-extrabold uppercase italic tracking-wider text-rose-600 dark:text-coral">Planes</p>
+        <Palabras texto="COMPRE HOY, *ESCALE* CUANDO CREZCA" className="mt-2 max-w-3xl font-titulo text-5xl text-noche sm:text-7xl dark:text-white" />
+        <Revela retraso={200}>
+          <p className="mt-4 max-w-2xl text-lg font-medium leading-relaxed text-zinc-600 dark:text-zinc-300">
+            Un solo pago por la licencia base, sin mensualidades. Si su empresa crece, amplíe la capacidad con una expansión anual;
+            si no, su costo sigue en <b className="text-noche dark:text-white">$0 al mes</b>.
+          </p>
+        </Revela>
+
+        <Pops className="mt-12 grid gap-6 lg:grid-cols-3" paso={110}>
+          {PLANES.map((pl) => (
+            <div key={pl.nombre} className={clsx("relative flex h-full flex-col border-[3px] border-noche bg-white p-6 transition-transform duration-300 ease-rebote hover:-translate-y-1 dark:bg-zinc-950",
+              pl.destacado ? "shadow-[10px_10px_0_0_#0A0147] dark:shadow-[10px_10px_0_0_#2EE5A7]" : "shadow-[6px_6px_0_0_#0A0147] dark:shadow-[6px_6px_0_0_#000]")}>
+              <span className={clsx("absolute -top-4 left-5 border-2 border-noche px-2 py-0.5 text-[11px] font-extrabold uppercase italic text-noche", pl.color)}>{pl.nota}</span>
+              <h3 className="mt-2 font-titulo text-3xl text-noche dark:text-white">{pl.nombre}</h3>
+              <p className="mt-3 flex items-end gap-2 text-noche dark:text-white">
+                <span className="font-titulo text-7xl leading-[0.8]">$<Cifra valor={pl.precio} ms={1200} /></span>
+                <span className="pb-1 text-sm font-extrabold uppercase">{pl.periodo}</span>
+              </p>
+              <ul className="mt-6 flex-1 space-y-2.5">
+                {pl.items.map((it) => (
+                  <li key={it} className="flex gap-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-200">
+                    <span className={clsx("mt-0.5 flex size-5 shrink-0 items-center justify-center border-2 border-noche text-noche", pl.color)}><Check className="size-3" strokeWidth={3.5} /></span>
+                    {it}
+                  </li>
+                ))}
+              </ul>
+              {pl.destacado
+                ? <p className="mt-6 border-t-2 border-noche pt-4 text-xs font-bold text-zinc-600 dark:border-zinc-700 dark:text-zinc-300">Más el setup obligatorio. Sin cuotas después.</p>
+                : <p className="mt-6 border-t-2 border-noche pt-4 text-xs font-bold text-zinc-600 dark:border-zinc-700 dark:text-zinc-300">Se suma a la licencia base. Renovación anual opcional.</p>}
+            </div>
+          ))}
+        </Pops>
+
+        {/* ticket de entrada */}
+        <Revela className="mt-14 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+          <div className="border-[3px] border-noche bg-noche p-6 text-white shadow-[8px_8px_0_0_#2EE5A7]">
+            <p className="text-xs font-extrabold uppercase italic tracking-wider text-menta">Ticket de entrada · pago único</p>
+            <div className="mt-3 flex flex-wrap items-center gap-3 font-titulo text-5xl sm:text-6xl">
+              <span>$299</span><span className="text-coral">+</span><span>$75</span><span className="text-coral">=</span>
+              <span className="bg-menta px-2 text-noche">$<Cifra valor={374} ms={1400} /></span>
+            </div>
+            <p className="mt-3 text-sm font-medium text-white/80">Licencia base + setup remoto. Pague con tarjeta diferida a 3 o 6 meses sin intereses, o 50 % al contratar y 50 % al terminar la instalación.</p>
+            <p className="mt-4 flex items-start gap-2 border-t-2 border-white/15 pt-4 text-sm font-semibold text-white/90">
+              <CreditCard className="mt-0.5 size-4 shrink-0 text-menta" />
+              Una agencia cobra entre $230 y $500 por una sola contratación. Con HireMind, aun sumando el Plan Crecimiento, el año completo cuesta menos.
+            </p>
+          </div>
+          <ul className="space-y-3">
+            {SERVICIOS.map(([n, pr, d], i) => (
+              <li key={n} className="a-entra flex items-center gap-4 border-2 border-noche bg-white px-4 py-3 dark:bg-zinc-950" style={{ "--i": i } as CSSProperties}>
+                <span className="w-16 shrink-0 font-titulo text-3xl text-noche dark:text-white">{pr}</span>
+                <span>
+                  <span className="block text-sm font-extrabold uppercase text-noche dark:text-white">{n}</span>
+                  <span className="block text-xs font-medium text-zinc-600 dark:text-zinc-300">{d}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </Revela>
+        <p className="mt-6 text-xs font-semibold text-zinc-500">Precios en dólares (USD). Propuesta comercial del proyecto académico.</p>
+      </div>
+    </section>
+  );
+}
 
 function Pregunta({ p, r, i }: { p: string; r: string; i: number }) {
   const [abierta, setAbierta] = useState(false);
@@ -372,7 +469,7 @@ export default function Landing() {
         <div className="mx-auto flex max-w-6xl items-center gap-6 border-2 border-noche bg-white px-3 py-2 shadow-[4px_4px_0_0_#0A0147] sm:px-4 dark:bg-zinc-900">
           <button onClick={() => irA("inicio")} aria-label="Ir al inicio"><Logo animado /></button>
           <nav className="hidden gap-1 md:flex">
-            {[["como", "Cómo funciona"], ["beneficios", "Beneficios"], ["preguntas", "Preguntas"]].map(([id, t]) => (
+            {[["como", "Cómo funciona"], ["beneficios", "Beneficios"], ["planes", "Planes"], ["preguntas", "Preguntas"]].map(([id, t]) => (
               <button key={id} onClick={() => irA(id)}
                 className="relative px-3 py-1.5 text-sm font-bold text-zinc-600 after:absolute after:inset-x-3 after:bottom-0.5 after:h-[3px] after:origin-left after:scale-x-0 after:bg-coral after:transition-transform after:duration-300 hover:text-noche hover:after:scale-x-100 dark:text-zinc-300 dark:hover:text-white">
                 {t}
@@ -470,6 +567,8 @@ export default function Landing() {
           </Pops>
         </div>
       </section>
+
+      <Planes />
 
       <section id="preguntas" className="relative bg-white dark:bg-zinc-950">
         <span aria-hidden className="absolute right-[25%] top-0 h-4 w-40 bg-azul" />
