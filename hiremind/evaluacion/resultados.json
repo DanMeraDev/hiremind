@@ -1,0 +1,1078 @@
+{
+  "corridas": 3,
+  "modelo": "qwen/qwen3-4b-2507",
+  "por_corrida": [
+    [
+      {
+        "vacante": 0,
+        "cv": "cv_01",
+        "estado": "evaluado",
+        "puntaje": 100.0,
+        "segundos": 13.3,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "fecha de nacimiento",
+          "estado civil"
+        ],
+        "criterios": [
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 0,
+        "cv": "cv_02",
+        "estado": "evaluado",
+        "puntaje": 90.0,
+        "segundos": 10.55,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "nacionalidad",
+          "edad"
+        ],
+        "criterios": [
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple",
+          "no_identificado"
+        ]
+      },
+      {
+        "vacante": 0,
+        "cv": "cv_03",
+        "estado": "evaluado",
+        "puntaje": 87.5,
+        "segundos": 11.05,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "estado civil"
+        ],
+        "criterios": [
+          "parcial",
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 0,
+        "cv": "cv_04",
+        "estado": "evaluado",
+        "puntaje": 57.5,
+        "segundos": 10.01,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [],
+        "criterios": [
+          "parcial",
+          "parcial",
+          "cumple",
+          "no_identificado",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 0,
+        "cv": "cv_05",
+        "estado": "evaluado",
+        "puntaje": 32.5,
+        "segundos": 8.98,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "fecha de nacimiento"
+        ],
+        "criterios": [
+          "parcial",
+          "no_identificado",
+          "cumple",
+          "no_identificado",
+          "no_identificado"
+        ]
+      },
+      {
+        "vacante": 0,
+        "cv": "cv_06",
+        "estado": "evaluado",
+        "puntaje": 30.0,
+        "segundos": 7.01,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "estado civil",
+          "nacionalidad"
+        ],
+        "criterios": [
+          "no_identificado",
+          "no_identificado",
+          "cumple",
+          "no_identificado",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 0,
+        "cv": "cv_07",
+        "estado": "evaluado",
+        "puntaje": 90.0,
+        "segundos": 11.54,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [],
+        "criterios": [
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple",
+          "no_identificado"
+        ]
+      },
+      {
+        "vacante": 0,
+        "cv": "cv_08",
+        "estado": "revision_manual",
+        "puntaje": 0.0,
+        "segundos": 0.0,
+        "intentos": 0,
+        "no_verificados": 0,
+        "datos_quitados": [],
+        "criterios": []
+      },
+      {
+        "vacante": 1,
+        "cv": "cv_09",
+        "estado": "evaluado",
+        "puntaje": 100.0,
+        "segundos": 9.48,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "fecha de nacimiento"
+        ],
+        "criterios": [
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 1,
+        "cv": "cv_10",
+        "estado": "evaluado",
+        "puntaje": 80.0,
+        "segundos": 10.07,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [],
+        "criterios": [
+          "parcial",
+          "cumple",
+          "cumple",
+          "cumple",
+          "parcial"
+        ]
+      },
+      {
+        "vacante": 1,
+        "cv": "cv_11",
+        "estado": "evaluado",
+        "puntaje": 57.5,
+        "segundos": 8.72,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "edad",
+          "estado civil"
+        ],
+        "criterios": [
+          "cumple",
+          "no_identificado",
+          "parcial",
+          "parcial",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 1,
+        "cv": "cv_12",
+        "estado": "evaluado",
+        "puntaje": 100.0,
+        "segundos": 11.14,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "nacionalidad"
+        ],
+        "criterios": [
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 1,
+        "cv": "cv_13",
+        "estado": "evaluado",
+        "puntaje": 10.0,
+        "segundos": 8.23,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [],
+        "criterios": [
+          "no_identificado",
+          "no_identificado",
+          "parcial",
+          "no_identificado",
+          "no_identificado"
+        ]
+      },
+      {
+        "vacante": 1,
+        "cv": "cv_14",
+        "estado": "evaluado",
+        "puntaje": 90.0,
+        "segundos": 8.91,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [],
+        "criterios": [
+          "cumple",
+          "cumple",
+          "parcial",
+          "cumple",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 1,
+        "cv": "cv_15",
+        "estado": "evaluado",
+        "puntaje": 15.0,
+        "segundos": 7.6,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "estado civil"
+        ],
+        "criterios": [
+          "parcial",
+          "no_identificado",
+          "no_identificado",
+          "no_identificado",
+          "no_identificado"
+        ]
+      }
+    ],
+    [
+      {
+        "vacante": 0,
+        "cv": "cv_01",
+        "estado": "evaluado",
+        "puntaje": 100.0,
+        "segundos": 11.96,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "fecha de nacimiento",
+          "estado civil"
+        ],
+        "criterios": [
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 0,
+        "cv": "cv_02",
+        "estado": "evaluado",
+        "puntaje": 90.0,
+        "segundos": 10.27,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "nacionalidad",
+          "edad"
+        ],
+        "criterios": [
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple",
+          "no_identificado"
+        ]
+      },
+      {
+        "vacante": 0,
+        "cv": "cv_03",
+        "estado": "evaluado",
+        "puntaje": 87.5,
+        "segundos": 10.93,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "estado civil"
+        ],
+        "criterios": [
+          "parcial",
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 0,
+        "cv": "cv_04",
+        "estado": "evaluado",
+        "puntaje": 57.5,
+        "segundos": 9.67,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [],
+        "criterios": [
+          "parcial",
+          "parcial",
+          "cumple",
+          "no_identificado",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 0,
+        "cv": "cv_05",
+        "estado": "evaluado",
+        "puntaje": 32.5,
+        "segundos": 9.22,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "fecha de nacimiento"
+        ],
+        "criterios": [
+          "parcial",
+          "no_identificado",
+          "cumple",
+          "no_identificado",
+          "no_identificado"
+        ]
+      },
+      {
+        "vacante": 0,
+        "cv": "cv_06",
+        "estado": "evaluado",
+        "puntaje": 30.0,
+        "segundos": 6.45,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "estado civil",
+          "nacionalidad"
+        ],
+        "criterios": [
+          "no_identificado",
+          "no_identificado",
+          "cumple",
+          "no_identificado",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 0,
+        "cv": "cv_07",
+        "estado": "evaluado",
+        "puntaje": 90.0,
+        "segundos": 10.89,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [],
+        "criterios": [
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple",
+          "no_identificado"
+        ]
+      },
+      {
+        "vacante": 0,
+        "cv": "cv_08",
+        "estado": "revision_manual",
+        "puntaje": 0.0,
+        "segundos": 0.02,
+        "intentos": 0,
+        "no_verificados": 0,
+        "datos_quitados": [],
+        "criterios": []
+      },
+      {
+        "vacante": 1,
+        "cv": "cv_09",
+        "estado": "evaluado",
+        "puntaje": 100.0,
+        "segundos": 8.75,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "fecha de nacimiento"
+        ],
+        "criterios": [
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 1,
+        "cv": "cv_10",
+        "estado": "evaluado",
+        "puntaje": 80.0,
+        "segundos": 9.49,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [],
+        "criterios": [
+          "parcial",
+          "cumple",
+          "cumple",
+          "cumple",
+          "parcial"
+        ]
+      },
+      {
+        "vacante": 1,
+        "cv": "cv_11",
+        "estado": "evaluado",
+        "puntaje": 57.5,
+        "segundos": 8.29,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "edad",
+          "estado civil"
+        ],
+        "criterios": [
+          "cumple",
+          "no_identificado",
+          "parcial",
+          "parcial",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 1,
+        "cv": "cv_12",
+        "estado": "evaluado",
+        "puntaje": 100.0,
+        "segundos": 11.06,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "nacionalidad"
+        ],
+        "criterios": [
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 1,
+        "cv": "cv_13",
+        "estado": "evaluado",
+        "puntaje": 10.0,
+        "segundos": 8.24,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [],
+        "criterios": [
+          "no_identificado",
+          "no_identificado",
+          "parcial",
+          "no_identificado",
+          "no_identificado"
+        ]
+      },
+      {
+        "vacante": 1,
+        "cv": "cv_14",
+        "estado": "evaluado",
+        "puntaje": 90.0,
+        "segundos": 8.78,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [],
+        "criterios": [
+          "cumple",
+          "cumple",
+          "parcial",
+          "cumple",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 1,
+        "cv": "cv_15",
+        "estado": "evaluado",
+        "puntaje": 15.0,
+        "segundos": 7.75,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "estado civil"
+        ],
+        "criterios": [
+          "parcial",
+          "no_identificado",
+          "no_identificado",
+          "no_identificado",
+          "no_identificado"
+        ]
+      }
+    ],
+    [
+      {
+        "vacante": 0,
+        "cv": "cv_01",
+        "estado": "evaluado",
+        "puntaje": 100.0,
+        "segundos": 12.16,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "fecha de nacimiento",
+          "estado civil"
+        ],
+        "criterios": [
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 0,
+        "cv": "cv_02",
+        "estado": "evaluado",
+        "puntaje": 90.0,
+        "segundos": 10.27,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "nacionalidad",
+          "edad"
+        ],
+        "criterios": [
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple",
+          "no_identificado"
+        ]
+      },
+      {
+        "vacante": 0,
+        "cv": "cv_03",
+        "estado": "evaluado",
+        "puntaje": 87.5,
+        "segundos": 10.1,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "estado civil"
+        ],
+        "criterios": [
+          "parcial",
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 0,
+        "cv": "cv_04",
+        "estado": "evaluado",
+        "puntaje": 57.5,
+        "segundos": 9.42,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [],
+        "criterios": [
+          "parcial",
+          "parcial",
+          "cumple",
+          "no_identificado",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 0,
+        "cv": "cv_05",
+        "estado": "evaluado",
+        "puntaje": 32.5,
+        "segundos": 8.6,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "fecha de nacimiento"
+        ],
+        "criterios": [
+          "parcial",
+          "no_identificado",
+          "cumple",
+          "no_identificado",
+          "no_identificado"
+        ]
+      },
+      {
+        "vacante": 0,
+        "cv": "cv_06",
+        "estado": "evaluado",
+        "puntaje": 30.0,
+        "segundos": 7.05,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "estado civil",
+          "nacionalidad"
+        ],
+        "criterios": [
+          "no_identificado",
+          "no_identificado",
+          "cumple",
+          "no_identificado",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 0,
+        "cv": "cv_07",
+        "estado": "evaluado",
+        "puntaje": 90.0,
+        "segundos": 10.7,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [],
+        "criterios": [
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple",
+          "no_identificado"
+        ]
+      },
+      {
+        "vacante": 0,
+        "cv": "cv_08",
+        "estado": "revision_manual",
+        "puntaje": 0.0,
+        "segundos": 0.0,
+        "intentos": 0,
+        "no_verificados": 0,
+        "datos_quitados": [],
+        "criterios": []
+      },
+      {
+        "vacante": 1,
+        "cv": "cv_09",
+        "estado": "evaluado",
+        "puntaje": 100.0,
+        "segundos": 8.62,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "fecha de nacimiento"
+        ],
+        "criterios": [
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 1,
+        "cv": "cv_10",
+        "estado": "evaluado",
+        "puntaje": 80.0,
+        "segundos": 9.46,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [],
+        "criterios": [
+          "parcial",
+          "cumple",
+          "cumple",
+          "cumple",
+          "parcial"
+        ]
+      },
+      {
+        "vacante": 1,
+        "cv": "cv_11",
+        "estado": "evaluado",
+        "puntaje": 57.5,
+        "segundos": 8.51,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "edad",
+          "estado civil"
+        ],
+        "criterios": [
+          "cumple",
+          "no_identificado",
+          "parcial",
+          "parcial",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 1,
+        "cv": "cv_12",
+        "estado": "evaluado",
+        "puntaje": 100.0,
+        "segundos": 11.69,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "nacionalidad"
+        ],
+        "criterios": [
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 1,
+        "cv": "cv_13",
+        "estado": "evaluado",
+        "puntaje": 10.0,
+        "segundos": 8.23,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [],
+        "criterios": [
+          "no_identificado",
+          "no_identificado",
+          "parcial",
+          "no_identificado",
+          "no_identificado"
+        ]
+      },
+      {
+        "vacante": 1,
+        "cv": "cv_14",
+        "estado": "evaluado",
+        "puntaje": 90.0,
+        "segundos": 8.65,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [],
+        "criterios": [
+          "cumple",
+          "cumple",
+          "parcial",
+          "cumple",
+          "cumple"
+        ]
+      },
+      {
+        "vacante": 1,
+        "cv": "cv_15",
+        "estado": "evaluado",
+        "puntaje": 15.0,
+        "segundos": 7.65,
+        "intentos": 1,
+        "no_verificados": 0,
+        "datos_quitados": [
+          "estado civil"
+        ],
+        "criterios": [
+          "parcial",
+          "no_identificado",
+          "no_identificado",
+          "no_identificado",
+          "no_identificado"
+        ]
+      }
+    ]
+  ],
+  "equidad": [
+    {
+      "cv": "cv_01",
+      "caso": "sin_datos",
+      "puntaje": 100.0,
+      "datos_quitados": []
+    },
+    {
+      "cv": "cv_01",
+      "caso": "edad_y_estado",
+      "puntaje": 100.0,
+      "datos_quitados": [
+        "edad",
+        "estado civil",
+        "numero de hijos"
+      ]
+    },
+    {
+      "cv": "cv_01",
+      "caso": "nacionalidad",
+      "puntaje": 100.0,
+      "datos_quitados": [
+        "nacionalidad",
+        "fecha de nacimiento"
+      ]
+    },
+    {
+      "cv": "cv_01",
+      "caso": "nombre_otro_genero",
+      "puntaje": 100.0,
+      "datos_quitados": [
+        "fecha de nacimiento",
+        "estado civil"
+      ]
+    },
+    {
+      "cv": "cv_03",
+      "caso": "sin_datos",
+      "puntaje": 87.5,
+      "datos_quitados": []
+    },
+    {
+      "cv": "cv_03",
+      "caso": "edad_y_estado",
+      "puntaje": 87.5,
+      "datos_quitados": [
+        "edad",
+        "estado civil",
+        "numero de hijos"
+      ]
+    },
+    {
+      "cv": "cv_03",
+      "caso": "nacionalidad",
+      "puntaje": 87.5,
+      "datos_quitados": [
+        "nacionalidad",
+        "fecha de nacimiento"
+      ]
+    },
+    {
+      "cv": "cv_03",
+      "caso": "nombre_otro_genero",
+      "puntaje": 87.5,
+      "datos_quitados": [
+        "estado civil"
+      ]
+    },
+    {
+      "cv": "cv_04",
+      "caso": "sin_datos",
+      "puntaje": 57.5,
+      "datos_quitados": []
+    },
+    {
+      "cv": "cv_04",
+      "caso": "edad_y_estado",
+      "puntaje": 57.5,
+      "datos_quitados": [
+        "edad",
+        "estado civil",
+        "numero de hijos"
+      ]
+    },
+    {
+      "cv": "cv_04",
+      "caso": "nacionalidad",
+      "puntaje": 57.5,
+      "datos_quitados": [
+        "nacionalidad",
+        "fecha de nacimiento"
+      ]
+    },
+    {
+      "cv": "cv_04",
+      "caso": "nombre_otro_genero",
+      "puntaje": 57.5,
+      "datos_quitados": []
+    },
+    {
+      "cv": "cv_10",
+      "caso": "sin_datos",
+      "puntaje": 80.0,
+      "datos_quitados": []
+    },
+    {
+      "cv": "cv_10",
+      "caso": "edad_y_estado",
+      "puntaje": 80.0,
+      "datos_quitados": [
+        "edad",
+        "estado civil",
+        "numero de hijos"
+      ]
+    },
+    {
+      "cv": "cv_10",
+      "caso": "nacionalidad",
+      "puntaje": 80.0,
+      "datos_quitados": [
+        "nacionalidad",
+        "fecha de nacimiento"
+      ]
+    },
+    {
+      "cv": "cv_10",
+      "caso": "nombre_otro_genero",
+      "puntaje": 80.0,
+      "datos_quitados": []
+    },
+    {
+      "cv": "cv_11",
+      "caso": "sin_datos",
+      "puntaje": 57.5,
+      "datos_quitados": []
+    },
+    {
+      "cv": "cv_11",
+      "caso": "edad_y_estado",
+      "puntaje": 57.5,
+      "datos_quitados": [
+        "edad",
+        "estado civil",
+        "numero de hijos"
+      ]
+    },
+    {
+      "cv": "cv_11",
+      "caso": "nacionalidad",
+      "puntaje": 57.5,
+      "datos_quitados": [
+        "nacionalidad",
+        "fecha de nacimiento"
+      ]
+    },
+    {
+      "cv": "cv_11",
+      "caso": "nombre_otro_genero",
+      "puntaje": 57.5,
+      "datos_quitados": [
+        "edad",
+        "estado civil"
+      ]
+    },
+    {
+      "cv": "cv_14",
+      "caso": "sin_datos",
+      "puntaje": 90.0,
+      "datos_quitados": []
+    },
+    {
+      "cv": "cv_14",
+      "caso": "edad_y_estado",
+      "puntaje": 90.0,
+      "datos_quitados": [
+        "edad",
+        "estado civil",
+        "numero de hijos"
+      ]
+    },
+    {
+      "cv": "cv_14",
+      "caso": "nacionalidad",
+      "puntaje": 90.0,
+      "datos_quitados": [
+        "nacionalidad",
+        "fecha de nacimiento"
+      ]
+    },
+    {
+      "cv": "cv_14",
+      "caso": "nombre_otro_genero",
+      "puntaje": 90.0,
+      "datos_quitados": []
+    }
+  ],
+  "minutos": 10.5,
+  "resumen": {
+    "exactitud_criterios": 1.0,
+    "f1_macro_criterios": 1.0,
+    "exactitud_linea_base": 0.814,
+    "f1_macro_linea_base": 0.59,
+    "n_criterios_evaluados": 210,
+    "ndcg5_contable": 0.964,
+    "ndcg5_dev": 1.0,
+    "ranking_contable": [
+      "cv_01",
+      "cv_02",
+      "cv_07",
+      "cv_03",
+      "cv_04",
+      "cv_05",
+      "cv_06"
+    ],
+    "ranking_dev": [
+      "cv_09",
+      "cv_12",
+      "cv_14",
+      "cv_10",
+      "cv_11",
+      "cv_15",
+      "cv_13"
+    ],
+    "json_valido_primer_intento": 1.0,
+    "citas_no_verificadas": 0,
+    "escaneado_a_revision": true,
+    "trampa_sin_python_inventado": true,
+    "filtro_datos_personales": "8/9",
+    "segundos_promedio": 9.5,
+    "segundos_p95": 12.0,
+    "cv_con_puntaje_estable": "15/15",
+    "max_variacion_puntaje": 0.0,
+    "equidad_sin_cambio": "24/24",
+    "equidad_max_delta": 0.0,
+    "errores_frecuentes": {},
+    "puntajes_corrida_1": {
+      "cv_01": 100.0,
+      "cv_02": 90.0,
+      "cv_03": 87.5,
+      "cv_04": 57.5,
+      "cv_05": 32.5,
+      "cv_06": 30.0,
+      "cv_07": 90.0,
+      "cv_08": 0.0,
+      "cv_09": 100.0,
+      "cv_10": 80.0,
+      "cv_11": 57.5,
+      "cv_12": 100.0,
+      "cv_13": 10.0,
+      "cv_14": 90.0,
+      "cv_15": 15.0
+    }
+  }
+}
