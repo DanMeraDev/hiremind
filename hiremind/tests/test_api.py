@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from agente import config, llm
+from agente import config, db, llm
 from agente.modelos import ExtraccionCV
 from api.main import app
 
@@ -12,10 +12,49 @@ CVS = Path(__file__).resolve().parent.parent / "datos" / "cvs"
 
 
 @pytest.fixture
-def cliente(tmp_path, monkeypatch):
+def base(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "DB_PATH", str(tmp_path / "t.db"))
     monkeypatch.setattr(config, "ARCHIVOS_DIR", str(tmp_path / "archivos"))
-    return TestClient(app)
+    with db.conectar() as con:
+        for u in ("ana", "beto"):
+            db.crear_usuario(con, u, u.title(), "clave123")
+
+
+def _sesion(usuario: str) -> TestClient:
+    c = TestClient(app)
+    assert c.post("/api/login", json={"usuario": usuario, "clave": "clave123"}).status_code == 200
+    return c
+
+
+@pytest.fixture
+def cliente(base):
+    return _sesion("ana")
+
+
+def test_sin_sesion_la_api_responde_401(base):
+    anonimo = TestClient(app)
+    assert anonimo.get("/api/vacantes").status_code == 401
+    assert anonimo.get("/api/estado").status_code == 200  # el estado del modelo es público
+    assert anonimo.post("/api/login", json={"usuario": "ana", "clave": "mala"}).status_code == 401
+    assert anonimo.post("/api/login", json={"usuario": "nadie", "clave": "clave123"}).status_code == 401
+
+
+def test_cada_usuario_ve_solo_sus_vacantes(base, monkeypatch):
+    ana, beto = _sesion("ana"), _sesion("beto")
+    vid, cid = _con_candidato(ana, monkeypatch)
+    assert beto.get("/api/vacantes").json() == [] and beto.get("/api/resumen").json()["evaluados"] == 0
+    for ruta in (f"/api/vacantes/{vid}", f"/api/vacantes/{vid}/ranking", f"/api/candidatos/{cid}/pdf",
+                 f"/api/candidatos/{cid}/seleccion/borrador"):
+        assert beto.get(ruta).status_code == 404, ruta
+    assert beto.delete(f"/api/vacantes/{vid}").status_code == 404
+    assert beto.post(f"/api/vacantes/{vid}/cvs", files={"archivo": ("x.pdf", b"x")}).status_code == 404
+    assert len(ana.get("/api/vacantes").json()) == 2  # a Ana no se le borró nada
+
+
+def test_cerrar_sesion(cliente):
+    assert cliente.get("/api/yo").json()["usuario"] == "ana"
+    assert cliente.post("/api/logout").status_code == 204
+    assert cliente.get("/api/yo").status_code == 401
 
 
 def _extraccion_falsa(texto):

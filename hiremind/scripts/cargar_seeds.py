@@ -1,10 +1,13 @@
-"""Carga las vacantes de prueba de datos/seeds/ y evalúa sus CV (necesita LM Studio encendido).
+"""Crea los 3 usuarios de prueba, les carga sus vacantes de datos/seeds/ y evalúa los CV (necesita LM Studio).
+
+    Usuarios (contraseña "hiremind"): usuario1 → Farmareds · usuario2 → Cocinero/a
+                                      usuario3 → Técnico/a de redes y Game designer
 
     .venv/bin/python scripts/cargar_seeds.py                   # las 4 vacantes con todos sus CV
     .venv/bin/python scripts/cargar_seeds.py cocinero -n 5     # una vacante, solo 5 CV
     .venv/bin/python scripts/cargar_seeds.py --sin-evaluar     # solo crear las vacantes (suba los PDF desde la app)
 
-Si la vacante ya existe (mismo título) se reutiliza y los CV ya cargados se saltan (--reevaluar para repetirlos).
+Si el usuario ya tiene la vacante (mismo título) se reutiliza y los CV ya cargados se saltan (--reevaluar para repetirlos).
 """
 import argparse
 import shutil
@@ -17,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from agente import config, db, llm  # noqa: E402
 from agente.pipeline import evaluar_cv  # noqa: E402
-from agente.seeds import VACANTES_SEEDS, archivos  # noqa: E402
+from agente.seeds import CLAVE_SEEDS, DUENO_SEED, USUARIOS_SEEDS, VACANTES_SEEDS, archivos  # noqa: E402
 
 p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
 p.add_argument("carpetas", nargs="*", help=f"vacantes a cargar: {', '.join(VACANTES_SEEDS)} (por defecto, todas)")
@@ -34,14 +37,25 @@ if not a.sin_evaluar:
         sys.exit(f"{msg}\nEncienda LM Studio o use --sin-evaluar.")
 
 with db.conectar() as con:
+    # 0. Usuarios de prueba. Vacantes sin dueño (bases de antes del inicio de sesión): las de prueba pasan a
+    #    su usuario, con los CV ya evaluados; el resto, al primero.
+    ids = {u["usuario"]: db.crear_usuario(con, u["usuario"], u["nombre"], CLAVE_SEEDS) for u in USUARIOS_SEEDS}
+    for carpeta, vac in VACANTES_SEEDS.items():
+        if n := db.asignar_huerfanas(con, ids[DUENO_SEED[carpeta]], vac.titulo):
+            print(f"{n} vacante(s) sin dueño «{vac.titulo.split(' · ')[0]}» pasan a {DUENO_SEED[carpeta]}")
+    if n := db.asignar_huerfanas(con, ids[USUARIOS_SEEDS[0]["usuario"]]):
+        print(f"{n} vacante(s) sin dueño más pasan a {USUARIOS_SEEDS[0]['usuario']}")
+    print(f"Usuarios: {', '.join(ids)} (contraseña: {CLAVE_SEEDS})\n")
+
     # 1. Crear primero TODAS las vacantes, así aparecen de inmediato en la app
-    existentes = {v.titulo: v for v in db.listar_vacantes(con)}
     vacantes = {}
     for carpeta in a.carpetas or VACANTES_SEEDS:
+        dueno = ids[DUENO_SEED[carpeta]]
+        existentes = {v.titulo: v for v in db.listar_vacantes(con, dueno)}
         vac = VACANTES_SEEDS[carpeta].model_copy()
-        vac.id = existentes[vac.titulo].id if vac.titulo in existentes else db.guardar_vacante(con, vac)
+        vac.id = existentes[vac.titulo].id if vac.titulo in existentes else db.guardar_vacante(con, vac, dueno)
         vacantes[carpeta] = vac
-        print(f"▸ {vac.titulo} (vacante {vac.id}, {len(archivos(carpeta))} CV)")
+        print(f"▸ {DUENO_SEED[carpeta]}: {vac.titulo} (vacante {vac.id}, {len(archivos(carpeta))} CV)")
     con.commit()
     if a.sin_evaluar:
         sys.exit()

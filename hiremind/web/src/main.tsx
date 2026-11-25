@@ -6,6 +6,7 @@ import { AppLayout } from "./components/Layout";
 import "./index.css";
 import EditorVacante from "./pages/EditorVacante";
 import Landing from "./pages/Landing";
+import Login from "./pages/Login";
 import Panel from "./pages/Panel";
 import Ranking from "./pages/Ranking";
 import SubirCVs from "./pages/SubirCVs";
@@ -20,6 +21,7 @@ const NoEncontrada = () => (
 
 const router = createBrowserRouter([
   { path: "/", element: <Landing /> },
+  { path: "/login", element: <Login /> },
   {
     path: "/app",
     element: <AppLayout />,

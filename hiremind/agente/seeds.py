@@ -91,3 +91,13 @@ VACANTES_SEEDS: dict[str, Vacante] = {
 def archivos(carpeta: str) -> list[Path]:
     """CV de una carpeta de seeds (se ignoran el aviso y el índice)."""
     return sorted((CARPETA / carpeta).glob("CV_*.pdf"))
+
+
+# Usuarios de prueba para la demo de concurrencia: cada uno ve SOLO sus vacantes.
+CLAVE_SEEDS = "hiremind"
+USUARIOS_SEEDS: list[dict] = [
+    {"usuario": "usuario1", "nombre": "Farmareds", "vacantes": ["farmareds"]},
+    {"usuario": "usuario2", "nombre": "Restaurante", "vacantes": ["cocinero"]},
+    {"usuario": "usuario3", "nombre": "Tecnología", "vacantes": ["tecnico_redes", "game_designer"]},
+]
+DUENO_SEED = {c: u["usuario"] for u in USUARIOS_SEEDS for c in u["vacantes"]}

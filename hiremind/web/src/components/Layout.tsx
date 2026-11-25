@@ -1,11 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
-import { Briefcase, ChevronRight, Cpu, FileUp, LayoutDashboard, ListChecks, Menu, Trophy, UserCheck, X } from "lucide-react";
+import { Briefcase, ChevronRight, Cpu, FileUp, LayoutDashboard, ListChecks, LogOut, Menu, Trophy, UserCheck, UserRound, X } from "lucide-react";
 import { useState, type CSSProperties } from "react";
 import { Palabras } from "./anim";
-import { Link, NavLink, Outlet, useLocation } from "react-router";
-import { api } from "../api";
-import { BotonTema, Logo } from "./ui";
+import { Link, Navigate, NavLink, Outlet, useLocation, useNavigate } from "react-router";
+import { api, ErrorApi } from "../api";
+import { BotonTema, Cargando, Logo } from "./ui";
 
 function EstadoLLM() {
   const { data, isLoading } = useQuery({ queryKey: ["estado"], queryFn: api.estado, refetchInterval: 15000 });
@@ -68,6 +68,35 @@ function Navegacion({ alNavegar }: { alNavegar?: () => void }) {
   );
 }
 
+function Cuenta() {
+  const { data: u } = useQuery({ queryKey: ["yo"], queryFn: api.yo });
+  const qc = useQueryClient();
+  const navegar = useNavigate();
+  const salir = useMutation({
+    mutationFn: api.logout,
+    onSettled: () => {
+      qc.clear();
+      navegar("/login", { replace: true });
+    },
+  });
+  if (!u) return null;
+  return (
+    <div className="flex items-center gap-2.5 border-2 border-(--tinta) bg-white p-2.5 shadow-xs dark:bg-zinc-900">
+      <span className="flex size-8 shrink-0 items-center justify-center border-2 border-(--tinta) bg-ambar text-noche">
+        <UserRound className="size-4" />
+      </span>
+      <div className="min-w-0 flex-1 leading-tight">
+        <p className="truncate text-sm font-bold">{u.nombre}</p>
+        <p className="truncate text-xs text-zinc-500">{u.usuario}</p>
+      </div>
+      <button className="btn-fantasma px-2" onClick={() => salir.mutate()} disabled={salir.isPending}
+        title="Cerrar sesión" aria-label="Cerrar sesión">
+        <LogOut className="size-4" />
+      </button>
+    </div>
+  );
+}
+
 function BarraLateral({ alNavegar }: { alNavegar?: () => void }) {
   return (
     <div className="flex h-full flex-col gap-6 p-4">
@@ -77,6 +106,7 @@ function BarraLateral({ alNavegar }: { alNavegar?: () => void }) {
       </div>
       <Navegacion alNavegar={alNavegar} />
       <div className="space-y-3">
+        <Cuenta />
         <EstadoLLM />
         <p className="flex gap-2 px-1 text-xs font-medium leading-relaxed text-zinc-500">
           <UserCheck className="mt-0.5 size-3.5 shrink-0" />
@@ -90,6 +120,10 @@ function BarraLateral({ alNavegar }: { alNavegar?: () => void }) {
 export function AppLayout() {
   const [abierto, setAbierto] = useState(false);
   const { pathname } = useLocation();
+  const yo = useQuery({ queryKey: ["yo"], queryFn: api.yo, retry: false, staleTime: 60_000 });
+  if (yo.isLoading) return <div className="flex min-h-dvh items-center justify-center"><Cargando texto="Comprobando sesión…" /></div>;
+  if (yo.error instanceof ErrorApi && yo.error.status === 401)
+    return <Navigate to={`/login?volver=${encodeURIComponent(pathname)}`} replace />;
   return (
     <div className="relative min-h-dvh lg:pl-64">
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 border-r-2 border-(--tinta) bg-white lg:block dark:bg-zinc-900">

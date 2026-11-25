@@ -191,17 +191,19 @@ def revisar_datos():
     else:
         aviso("no hay .env: la selección funciona pero NO envía correo (copie .env.example como .env)")
     db = RAIZ / os.getenv("HIREMIND_DB", "hiremind.db")
-    n = 0
+    usuarios: list[tuple[str, int]] = []
     if db.exists():
         try:
             with sqlite3.connect(db) as con:
-                n = con.execute("SELECT COUNT(*) FROM vacantes").fetchone()[0]
-        except sqlite3.Error:
+                usuarios = con.execute("SELECT u.usuario, COUNT(v.id) FROM usuarios u "
+                                       "LEFT JOIN vacantes v ON v.usuario_id=u.id GROUP BY u.id ORDER BY u.usuario").fetchall()
+        except sqlite3.Error:  # base sin tabla usuarios (de antes del inicio de sesión)
             pass
-    if n:
-        ok(f"{n} vacante(s) en la base")
+    if usuarios:
+        ok("usuarios: " + ", ".join(f"{u} ({n} vacante{'s' if n != 1 else ''})" for u, n in usuarios))
     else:
-        aviso("la base no tiene vacantes → corra: python demo.py --vacantes (crea las 4 del grupo, sin evaluar CV)")
+        falla("no hay usuarios para iniciar sesión",
+              "corra: python demo.py --vacantes (crea usuario1-3, contraseña hiremind, con sus vacantes)")
 
 
 def _es_virtual(ip: str) -> bool:
@@ -256,7 +258,7 @@ def main():
     ap.add_argument("-p", "--puerto", type=int, default=int(os.getenv("PUERTO", 8000)))
     ap.add_argument("--revisar", action="store_true", help="solo revisar, no arrancar")
     ap.add_argument("--local", action="store_true", help="no abrir a la red")
-    ap.add_argument("--vacantes", action="store_true", help="crear las 4 vacantes del grupo si no existen")
+    ap.add_argument("--vacantes", action="store_true", help="crear los 3 usuarios de prueba y sus vacantes si no existen")
     a = ap.parse_args()
     os.chdir(RAIZ)
     try:

@@ -29,7 +29,7 @@ python demo.py            # Windows: py demo.py
 2. **Instalar** si la laptop no los tiene: Python 3.12+, Node.js 20+ y [LM Studio](https://lmstudio.ai). Abra LM Studio una vez para que se instale el comando `lms`, y luego cierre y abra la terminal.
 3. **Descargar el modelo** (≈2,5 GB): `lms get qwen/qwen3-4b-2507`
 4. **Correo** (opcional): el archivo `.env` no está en git porque tiene la contraseña de Gmail. Cópielo de la otra PC por USB, o copie `.env.example` como `.env` y llénelo. Sin `.env` la app funciona igual, pero al seleccionar un candidato no envía el correo.
-5. **Vacantes del grupo:** la base de datos no viaja por git, así que la laptop empieza vacía. Esto crea las 4 vacantes sin evaluar CV:
+5. **Usuarios y vacantes de prueba:** la base de datos no viaja por git, así que la laptop empieza vacía. Esto crea los 3 usuarios, cada uno con sus vacantes, sin evaluar CV:
    ```bash
    python demo.py --vacantes --revisar
    ```
@@ -54,7 +54,15 @@ python demo.py            # Windows: py demo.py
    Otros dispositivos:  http://192.168.43.120:8000
    ```
 4. Los otros 2 conectan su celular al **mismo hotspot** y abren la segunda dirección.
-5. Al terminar, **Ctrl+C**. La app deja de estar abierta a la red.
+5. Cada uno inicia sesión con **su propio usuario** (contraseña `hiremind` para los 3). Cada uno ve solo sus vacantes:
+
+   | Usuario | Vacantes | CV para subir |
+   |---|---|---|
+   | `usuario1` | Auxiliar de farmacia (Farmareds) | `datos/seeds/farmareds/` |
+   | `usuario2` | Cocinero/a | `datos/seeds/cocinero/` |
+   | `usuario3` | Técnico/a de redes y Game designer | `datos/seeds/tecnico_redes/`, `datos/seeds/game_designer/` |
+
+6. Al terminar, **Ctrl+C**. La app deja de estar abierta a la red.
 
 > **Windows:** la primera vez sale el aviso del firewall: marque **Redes privadas** y acepte. Si el hotspot aparece como red pública, cámbielo a privada en Configuración > Red e Internet.
 > **Linux con firewall** (Fedora Server, Ubuntu con ufw): `demo.py` avisa y da el comando para abrir el puerto.
@@ -63,9 +71,10 @@ python demo.py            # Windows: py demo.py
 
 | Quién | Qué hace |
 |---|---|
-| Laptop principal | Proyecta la app. Abre la vacante **Auxiliar de farmacia** y sube 5 CV de `datos/seeds/farmareds/` |
-| Usuario 2 | Al mismo tiempo, vacante **Cocinero/a**, sube 5 CV de `datos/seeds/cocinero/` (puede pasarlos al celular antes) |
-| Usuario 3 | Al mismo tiempo, vacante **Técnico/a de redes**, sube 5 CV de `datos/seeds/tecnico_redes/` |
+| Laptop principal (`usuario1`) | Proyecta la app. Abre **Auxiliar de farmacia** y sube 5 CV de `datos/seeds/farmareds/` |
+| Persona 2 (`usuario2`) | Al mismo tiempo, en **Cocinero/a** sube 5 CV de `datos/seeds/cocinero/`. Conviene pasarlos al celular antes |
+| Persona 3 (`usuario3`) | Al mismo tiempo, en **Técnico/a de redes** sube 5 CV de `datos/seeds/tecnico_redes/` |
+| Laptop principal | Muestra que `usuario1` no ve las vacantes de los otros: cada reclutador tiene sus datos aparte |
 | Todos | Muestran que las 3 barras avanzan en paralelo. Luego abren el ranking de cada vacante |
 | Laptop principal | Selecciona a un candidato: correo y preguntas de entrevista |
 
@@ -84,7 +93,9 @@ Qué decir, con los números medidos (`evaluacion/benchmark.json`, diapositiva 1
 | "LM Studio no responde" | En la app LM Studio: pestaña Developer > Start Server, y vuelva a correr |
 | Va muy lento o se congela | Poca RAM: cierre programas, o use `python demo.py -u 1` y haga la demo con un usuario |
 | El puerto 8000 está ocupado | `python demo.py -p 8001` |
-| Sin red | **Plan B:** 3 pestañas en la misma laptop con `python demo.py --local`. La concurrencia es igual de real, porque el servidor atiende a las 3 |
+| Sin red | **Plan B:** 3 ventanas en la misma laptop con `python demo.py --local`. La concurrencia es igual de real, porque el servidor atiende a las 3. Las pestañas de un mismo navegador comparten la sesión, así que use ventanas distintas: Chrome normal (`usuario1`), Chrome incógnito (`usuario2`) y Firefox o Edge (`usuario3`) |
+| "Usuario o contraseña incorrectos" | La contraseña es `hiremind`. Si no hay usuarios, corra `python demo.py --vacantes` |
+| Entró con el usuario equivocado | Botón de salir, abajo a la izquierda, junto al nombre |
 
 ## Opciones de `demo.py`
 
@@ -94,6 +105,6 @@ Qué decir, con los números medidos (`evaluacion/benchmark.json`, diapositiva 1
 | `-u N` | Usuarios simultáneos para los que se carga el modelo (por defecto 3) |
 | `-p PUERTO` | Otro puerto (por defecto 8000) |
 | `--local` | Solo en esta PC, sin abrir a la red |
-| `--vacantes` | Crea las 4 vacantes del grupo si no existen |
+| `--vacantes` | Crea usuario1–3 (contraseña `hiremind`) con sus vacantes, si no existen. Las vacantes viejas sin dueño pasan a su usuario |
 
 Para el uso normal, solo en la PC, sigue sirviendo `./iniciar.sh`. Con `HOST=0.0.0.0 ./iniciar.sh` se abre a la red, pero sin las revisiones de `demo.py`.

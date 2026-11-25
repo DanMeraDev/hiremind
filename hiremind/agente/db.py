@@ -1,7 +1,10 @@
 """Persistencia local en SQLite: vacantes, candidatos, evaluaciones y evidencias."""
 from __future__ import annotations
 
+import hashlib
+import hmac
 import json
+import secrets
 import sqlite3
 from contextlib import contextmanager
 from datetime import datetime
@@ -10,8 +13,21 @@ from . import config
 from .modelos import ResultadoCriterio, Vacante
 
 ESQUEMA = """
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INTEGER PRIMARY KEY,
+    usuario TEXT NOT NULL UNIQUE COLLATE NOCASE,
+    nombre TEXT NOT NULL,
+    clave_hash TEXT NOT NULL,
+    creado TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS sesiones (
+    token TEXT PRIMARY KEY,
+    usuario_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+    creada TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS vacantes (
     id INTEGER PRIMARY KEY,
+    usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
     titulo TEXT NOT NULL,
     descripcion TEXT NOT NULL DEFAULT '',
     criterios_json TEXT NOT NULL,
@@ -72,6 +88,7 @@ def conectar(path: str | None = None):
     con.row_factory = sqlite3.Row
     con.execute("PRAGMA foreign_keys = ON")
     con.executescript(ESQUEMA)
+    _migrar(con)
     try:
         yield con
         con.commit()
@@ -79,26 +96,88 @@ def conectar(path: str | None = None):
         con.close()
 
 
+def _migrar(con) -> None:
+    """Bases creadas antes del inicio de sesión: la vacante aún no tenía dueño."""
+    if "usuario_id" not in {f["name"] for f in con.execute("PRAGMA table_info(vacantes)")}:
+        con.execute("ALTER TABLE vacantes ADD COLUMN usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE")
+
+
+# ---------------------------------------------------------------- usuarios y sesiones
+def _hash(clave: str, sal: bytes | None = None) -> str:
+    sal = sal or secrets.token_bytes(16)
+    h = hashlib.pbkdf2_hmac("sha256", clave.encode(), sal, 200_000)
+    return f"{sal.hex()}${h.hex()}"
+
+
+def crear_usuario(con, usuario: str, nombre: str, clave: str) -> int:
+    """Crea la cuenta o, si ya existe, actualiza su nombre y contraseña."""
+    f = con.execute("SELECT id FROM usuarios WHERE usuario=?", (usuario,)).fetchone()
+    if f:
+        con.execute("UPDATE usuarios SET nombre=?, clave_hash=? WHERE id=?", (nombre, _hash(clave), f["id"]))
+        return f["id"]
+    return con.execute("INSERT INTO usuarios (usuario, nombre, clave_hash, creado) VALUES (?,?,?,?)",
+                       (usuario, nombre, _hash(clave), _ahora())).lastrowid
+
+
+def verificar_clave(con, usuario: str, clave: str) -> dict | None:
+    f = con.execute("SELECT id, usuario, nombre, clave_hash FROM usuarios WHERE usuario=?", (usuario.strip(),)).fetchone()
+    if f is None:
+        _hash(clave)  # mismo tiempo de respuesta exista o no el usuario
+        return None
+    sal, _ = f["clave_hash"].split("$")
+    if not hmac.compare_digest(_hash(clave, bytes.fromhex(sal)), f["clave_hash"]):
+        return None
+    return {"id": f["id"], "usuario": f["usuario"], "nombre": f["nombre"]}
+
+
+def abrir_sesion(con, usuario_id: int) -> str:
+    token = secrets.token_urlsafe(32)
+    con.execute("INSERT INTO sesiones (token, usuario_id, creada) VALUES (?,?,?)", (token, usuario_id, _ahora()))
+    return token
+
+
+def usuario_de_sesion(con, token: str) -> dict | None:
+    f = con.execute("SELECT u.id, u.usuario, u.nombre FROM sesiones s JOIN usuarios u ON u.id=s.usuario_id "
+                    "WHERE s.token=?", (token,)).fetchone()
+    return dict(f) if f else None
+
+
+def cerrar_sesion(con, token: str) -> None:
+    con.execute("DELETE FROM sesiones WHERE token=?", (token,))
+
+
+def asignar_huerfanas(con, usuario_id: int, titulo: str | None = None) -> int:
+    """Vacantes sin dueño (creadas antes del inicio de sesión) pasan a este usuario; con titulo, solo esas."""
+    if titulo is None:
+        return con.execute("UPDATE vacantes SET usuario_id=? WHERE usuario_id IS NULL", (usuario_id,)).rowcount
+    return con.execute("UPDATE vacantes SET usuario_id=? WHERE usuario_id IS NULL AND titulo=?",
+                       (usuario_id, titulo)).rowcount
+
+
 # ---------------------------------------------------------------- vacantes
-def guardar_vacante(con, vac: Vacante) -> int:
+def guardar_vacante(con, vac: Vacante, usuario_id: int | None = None) -> int:
     criterios = json.dumps([c.model_dump() for c in vac.criterios], ensure_ascii=False)
     if vac.id:
         con.execute("UPDATE vacantes SET titulo=?, descripcion=?, criterios_json=? WHERE id=?",
                     (vac.titulo, vac.descripcion, criterios, vac.id))
         return vac.id
-    cur = con.execute("INSERT INTO vacantes (titulo, descripcion, criterios_json, creada) VALUES (?,?,?,?)",
-                      (vac.titulo, vac.descripcion, criterios, _ahora()))
+    cur = con.execute("INSERT INTO vacantes (usuario_id, titulo, descripcion, criterios_json, creada) "
+                      "VALUES (?,?,?,?,?)", (usuario_id, vac.titulo, vac.descripcion, criterios, _ahora()))
     return cur.lastrowid
 
 
-def listar_vacantes(con) -> list[Vacante]:
-    filas = con.execute("SELECT * FROM vacantes ORDER BY id").fetchall()
+def listar_vacantes(con, usuario_id: int | None = None) -> list[Vacante]:
+    """Con usuario_id, solo las de ese usuario; sin él, todas (scripts y pruebas)."""
+    if usuario_id is None:
+        filas = con.execute("SELECT * FROM vacantes ORDER BY id").fetchall()
+    else:
+        filas = con.execute("SELECT * FROM vacantes WHERE usuario_id=? ORDER BY id", (usuario_id,)).fetchall()
     return [Vacante(id=f["id"], titulo=f["titulo"], descripcion=f["descripcion"],
                     criterios=json.loads(f["criterios_json"])) for f in filas]
 
 
-def obtener_vacante(con, vacante_id: int) -> Vacante | None:
-    return next((v for v in listar_vacantes(con) if v.id == vacante_id), None)
+def obtener_vacante(con, vacante_id: int, usuario_id: int | None = None) -> Vacante | None:
+    return next((v for v in listar_vacantes(con, usuario_id) if v.id == vacante_id), None)
 
 
 def borrar_vacante(con, vacante_id: int) -> bool:
@@ -120,21 +199,27 @@ def estadisticas_vacantes(con) -> dict[int, dict]:
     return out
 
 
-def resumen(con) -> dict:
-    """Números del panel de inicio."""
+def resumen(con, usuario_id: int | None = None) -> dict:
+    """Números del panel de inicio (de un usuario, o de todos sin usuario_id)."""
+    filtro = "" if usuario_id is None else "WHERE usuario_id = :u"
+    mias = f"(SELECT id FROM vacantes {filtro})"
+    cands = f"FROM candidatos WHERE vacante_id IN {mias}"
+    evals = f"FROM evaluaciones WHERE candidato_id IN (SELECT id {cands})"
+    p = {"u": usuario_id}
     tot = con.execute(
-        "SELECT (SELECT COUNT(*) FROM vacantes) AS vacantes, "
-        "(SELECT COUNT(*) FROM candidatos WHERE estado='evaluado') AS evaluados, "
-        "(SELECT COUNT(*) FROM candidatos WHERE estado='revision_manual') AS revision, "
-        "(SELECT AVG(segundos) FROM evaluaciones) AS seg, "
-        "(SELECT COUNT(*) FROM evaluaciones WHERE corregida=1) AS corregidas").fetchone()
-    puntajes = [f[0] for f in con.execute("SELECT puntaje FROM evaluaciones")]
+        f"SELECT (SELECT COUNT(*) FROM vacantes {filtro}) AS vacantes, "
+        f"(SELECT COUNT(*) {cands} AND estado='evaluado') AS evaluados, "
+        f"(SELECT COUNT(*) {cands} AND estado='revision_manual') AS revision, "
+        f"(SELECT AVG(segundos) {evals}) AS seg, "
+        f"(SELECT COUNT(*) {evals} AND corregida=1) AS corregidas", p).fetchone()
+    puntajes = [f[0] for f in con.execute(f"SELECT puntaje {evals}", p)]
     rangos = [(0, 25), (25, 50), (50, 75), (75, 101)]
     distribucion = [{"rango": f"{a}–{min(b, 100)}", "cantidad": sum(a <= p < b for p in puntajes)} for a, b in rangos]
     recientes = [dict(f) for f in con.execute(
         "SELECT c.id, c.nombre, c.archivo, c.estado, c.creado, v.id AS vacante_id, v.titulo AS vacante, "
         "e.puntaje FROM candidatos c JOIN vacantes v ON v.id=c.vacante_id "
-        "LEFT JOIN evaluaciones e ON e.candidato_id=c.id ORDER BY c.creado DESC, c.id DESC LIMIT 8")]
+        f"LEFT JOIN evaluaciones e ON e.candidato_id=c.id WHERE v.id IN {mias} "
+        "ORDER BY c.creado DESC, c.id DESC LIMIT 8", p)]
     return {"vacantes": tot["vacantes"], "evaluados": tot["evaluados"], "revision": tot["revision"],
             "segundos_promedio": round(tot["seg"], 1) if tot["seg"] is not None else None,
             "corregidas": tot["corregidas"], "distribucion": distribucion, "recientes": recientes}

@@ -10,7 +10,7 @@ import csv
 import io
 from pathlib import Path
 
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ValidationError
@@ -27,13 +27,63 @@ WEB = RAIZ / "web" / "dist"
 app = FastAPI(title="HireMind API", version="1.0")
 
 
+COOKIE = "hiremind_sesion"
+
+
+# ---------------------------------------------------------------- sesión
+def usuario_actual(request: Request) -> dict:
+    """Usuario de la cookie de sesión; sin sesión válida, 401 (la interfaz manda a /login)."""
+    token = request.cookies.get(COOKIE, "")
+    with db.conectar() as con:
+        u = db.usuario_de_sesion(con, token) if token else None
+    if u is None:
+        raise HTTPException(401, "Inicie sesión")
+    return u
+
+
+Usuario = Depends(usuario_actual)
+
+
+class Credenciales(BaseModel):
+    usuario: str
+    clave: str
+
+
+@app.post("/api/login")
+def login(body: Credenciales):
+    with db.conectar() as con:
+        u = db.verificar_clave(con, body.usuario, body.clave)
+        if u is None:
+            raise HTTPException(401, "Usuario o contraseña incorrectos")
+        token = db.abrir_sesion(con, u["id"])
+    r = JSONResponse(u)
+    r.set_cookie(COOKIE, token, httponly=True, samesite="lax", max_age=60 * 60 * 24 * 7)
+    return r
+
+
+@app.post("/api/logout", status_code=204)
+def logout(request: Request):
+    if token := request.cookies.get(COOKIE):
+        with db.conectar() as con:
+            db.cerrar_sesion(con, token)
+    r = Response(status_code=204)
+    r.delete_cookie(COOKIE)
+    return r
+
+
+@app.get("/api/yo")
+def yo(u: dict = Usuario):
+    return u
+
+
 # ---------------------------------------------------------------- utilidades
 def _errores(e: ValidationError) -> list[str]:
     return [str(x["msg"]).removeprefix("Value error, ") for x in e.errors()]
 
 
-def _vacante_o_404(con, vacante_id: int) -> Vacante:
-    vac = db.obtener_vacante(con, vacante_id)
+def _vacante_o_404(con, vacante_id: int, u: dict) -> Vacante:
+    """La vacante solo existe para su dueño: a otro usuario se le responde 404, no 403."""
+    vac = db.obtener_vacante(con, vacante_id, u["id"])
     if vac is None:
         raise HTTPException(404, "La vacante no existe")
     return vac
@@ -56,74 +106,74 @@ def estado():
 
 
 @app.get("/api/resumen")
-def resumen():
+def resumen(u: dict = Usuario):
     with db.conectar() as con:
-        datos = db.resumen(con)
+        datos = db.resumen(con, u["id"])
         stats = db.estadisticas_vacantes(con)
-        datos["por_vacante"] = [_vacante_json(v, stats) for v in db.listar_vacantes(con)]
+        datos["por_vacante"] = [_vacante_json(v, stats) for v in db.listar_vacantes(con, u["id"])]
     return datos
 
 
 # ---------------------------------------------------------------- vacantes
 @app.get("/api/vacantes")
-def listar_vacantes():
+def listar_vacantes(u: dict = Usuario):
     with db.conectar() as con:
         stats = db.estadisticas_vacantes(con)
-        return [_vacante_json(v, stats) for v in db.listar_vacantes(con)]
+        return [_vacante_json(v, stats) for v in db.listar_vacantes(con, u["id"])]
 
 
 @app.get("/api/vacantes/{vacante_id}")
-def obtener_vacante(vacante_id: int):
+def obtener_vacante(vacante_id: int, u: dict = Usuario):
     with db.conectar() as con:
-        return _vacante_json(_vacante_o_404(con, vacante_id), db.estadisticas_vacantes(con))
+        return _vacante_json(_vacante_o_404(con, vacante_id, u), db.estadisticas_vacantes(con))
 
 
-def _guardar(datos: dict, vacante_id: int | None = None):
+def _guardar(datos: dict, u: dict, vacante_id: int | None = None):
     try:
         vac = Vacante.model_validate({**datos, "id": vacante_id})
     except ValidationError as e:
         return JSONResponse({"errores": _errores(e)}, status_code=422)
     with db.conectar() as con:
         if vacante_id is not None:
-            _vacante_o_404(con, vacante_id)
-        vid = db.guardar_vacante(con, vac)
-        return _vacante_json(db.obtener_vacante(con, vid), db.estadisticas_vacantes(con))
+            _vacante_o_404(con, vacante_id, u)
+        vid = db.guardar_vacante(con, vac, u["id"])
+        return _vacante_json(db.obtener_vacante(con, vid, u["id"]), db.estadisticas_vacantes(con))
 
 
 @app.post("/api/vacantes", status_code=201)
-def crear_vacante(datos: dict):
-    return _guardar(datos)
+def crear_vacante(datos: dict, u: dict = Usuario):
+    return _guardar(datos, u)
 
 
 @app.put("/api/vacantes/{vacante_id}")
-def actualizar_vacante(vacante_id: int, datos: dict):
-    return _guardar(datos, vacante_id)
+def actualizar_vacante(vacante_id: int, datos: dict, u: dict = Usuario):
+    return _guardar(datos, u, vacante_id)
 
 
 @app.delete("/api/vacantes/{vacante_id}", status_code=204)
-def borrar_vacante(vacante_id: int):
+def borrar_vacante(vacante_id: int, u: dict = Usuario):
     with db.conectar() as con:
-        if not db.borrar_vacante(con, vacante_id):
-            raise HTTPException(404, "La vacante no existe")
+        _vacante_o_404(con, vacante_id, u)
+        db.borrar_vacante(con, vacante_id)
 
 
 @app.post("/api/vacantes/demo")
-def cargar_demo():
-    """Carga las 2 vacantes de ejemplo (si ya existen, no las duplica)."""
+def cargar_demo(u: dict = Usuario):
+    """Carga las 2 vacantes de ejemplo para este usuario (si ya las tiene, no las duplica)."""
     with db.conectar() as con:
-        existentes = {v.titulo for v in db.listar_vacantes(con)}
-        nuevas = [db.guardar_vacante(con, v) for v in VACANTES_DEMO if v.titulo not in existentes]
+        existentes = {v.titulo for v in db.listar_vacantes(con, u["id"])}
+        nuevas = [db.guardar_vacante(con, v, u["id"]) for v in VACANTES_DEMO if v.titulo not in existentes]
     return {"creadas": len(nuevas)}
 
 
 # ---------------------------------------------------------------- hojas de vida
 @app.post("/api/vacantes/{vacante_id}/cvs")
-def subir_cv(vacante_id: int, archivo: UploadFile = File(...)):
+def subir_cv(vacante_id: int, archivo: UploadFile = File(...), u: dict = Usuario):
     """Evalúa una hoja de vida (pasos 1-8). La interfaz envía los PDF de uno en uno para mostrar el avance."""
     nombre = Path(archivo.filename or "cv.pdf").name
     datos = archivo.file.read()
     with db.conectar() as con:
-        vac = _vacante_o_404(con, vacante_id)
+        vac = _vacante_o_404(con, vacante_id, u)
         ruta = _ruta_pdf(vacante_id, nombre)
         ruta.parent.mkdir(parents=True, exist_ok=True)
         ruta.write_bytes(datos)
@@ -134,9 +184,9 @@ def subir_cv(vacante_id: int, archivo: UploadFile = File(...)):
 
 
 @app.get("/api/vacantes/{vacante_id}/ranking")
-def ranking(vacante_id: int):
+def ranking(vacante_id: int, u: dict = Usuario):
     with db.conectar() as con:
-        _vacante_o_404(con, vacante_id)
+        _vacante_o_404(con, vacante_id, u)
         filas = db.ranking(con, vacante_id)
         manual = db.revision_manual(con, vacante_id)
     for i, f in enumerate(filas, 1):
@@ -147,9 +197,9 @@ def ranking(vacante_id: int):
 
 
 @app.get("/api/vacantes/{vacante_id}/ranking.csv")
-def ranking_csv(vacante_id: int):
+def ranking_csv(vacante_id: int, u: dict = Usuario):
     with db.conectar() as con:
-        vac = _vacante_o_404(con, vacante_id)
+        vac = _vacante_o_404(con, vacante_id, u)
         filas = db.ranking(con, vacante_id)
     buf = io.StringIO()
     w = csv.writer(buf)
@@ -164,11 +214,11 @@ def ranking_csv(vacante_id: int):
 
 
 @app.get("/api/candidatos/{candidato_id}/pdf")
-def pdf_original(candidato_id: int):
+def pdf_original(candidato_id: int, u: dict = Usuario):
     with db.conectar() as con:
         c = db.candidato(con, candidato_id)
-    if c is None:
-        raise HTTPException(404, "El candidato no existe")
+        if c is None or db.obtener_vacante(con, c["vacante_id"], u["id"]) is None:
+            raise HTTPException(404, "El candidato no existe")
     ruta = _ruta_pdf(c["vacante_id"], c["archivo"])
     if not ruta.exists():
         raise HTTPException(404, "No hay copia del PDF original")
@@ -182,9 +232,10 @@ class Correccion(BaseModel):
 
 
 @app.patch("/api/evaluaciones/{eval_id}/criterios/{criterio_id}")
-def corregir(eval_id: int, criterio_id: str, body: Correccion):
+def corregir(eval_id: int, criterio_id: str, body: Correccion, u: dict = Usuario):
     with db.conectar() as con:
-        if db.evaluacion_de(con, eval_id) is None:
+        ev = db.evaluacion_de(con, eval_id)
+        if ev is None or db.obtener_vacante(con, ev["vacante_id"], u["id"]) is None:
             raise HTTPException(404, "La evaluación no existe")
         return {"puntaje": db.corregir_criterio(con, eval_id, criterio_id, body.estado)}
 
@@ -196,11 +247,11 @@ class Seleccion(BaseModel):
     enviar_correo: bool = True
 
 
-def _evaluado_o_404(con, candidato_id: int) -> tuple[Vacante, dict]:
+def _evaluado_o_404(con, candidato_id: int, u: dict) -> tuple[Vacante, dict]:
     c = db.candidato(con, candidato_id)
-    if c is None:
+    if c is None or db.obtener_vacante(con, c["vacante_id"], u["id"]) is None:
         raise HTTPException(404, "El candidato no existe")
-    vac = _vacante_o_404(con, c["vacante_id"])
+    vac = _vacante_o_404(con, c["vacante_id"], u)
     fila = next((f for f in db.ranking(con, vac.id) if f["id"] == candidato_id), None)
     if fila is None:
         raise HTTPException(409, "Solo se puede seleccionar a un candidato evaluado")
@@ -218,10 +269,10 @@ def _componer(vac: Vacante, fila: dict, mensaje: str = ""):
 
 
 @app.get("/api/candidatos/{candidato_id}/seleccion/borrador")
-def borrador_seleccion(candidato_id: int):
+def borrador_seleccion(candidato_id: int, u: dict = Usuario):
     """Correo sugerido (si aparece en el CV) y vista previa del mensaje, antes de confirmar."""
     with db.conectar() as con:
-        vac, fila = _evaluado_o_404(con, candidato_id)
+        vac, fila = _evaluado_o_404(con, candidato_id, u)
     asunto, texto, _ = _componer(vac, fila)
     return {"correo_sugerido": _correo_en_cv(vac.id, fila["archivo"]), "asunto": asunto, "texto": texto,
             "correo_configurado": correo.configurado(), "remitente": config.MAIL_FROM,
@@ -229,13 +280,13 @@ def borrador_seleccion(candidato_id: int):
 
 
 @app.post("/api/candidatos/{candidato_id}/seleccionar")
-def seleccionar(candidato_id: int, body: Seleccion):
+def seleccionar(candidato_id: int, body: Seleccion, u: dict = Usuario):
     """La persona elige al candidato: se le envía el correo y se generan las preguntas de entrevista."""
     destino = body.correo.strip()
     if not correo.correo_valido(destino):
         raise HTTPException(422, "Escriba un correo válido para el candidato")
     with db.conectar() as con:
-        vac, fila = _evaluado_o_404(con, candidato_id)
+        vac, fila = _evaluado_o_404(con, candidato_id, u)
     enviado = None
     if body.enviar_correo:
         try:
@@ -251,9 +302,9 @@ def seleccionar(candidato_id: int, body: Seleccion):
 
 
 @app.post("/api/candidatos/{candidato_id}/preguntas")
-def regenerar_preguntas(candidato_id: int):
+def regenerar_preguntas(candidato_id: int, u: dict = Usuario):
     with db.conectar() as con:
-        vac, fila = _evaluado_o_404(con, candidato_id)
+        vac, fila = _evaluado_o_404(con, candidato_id, u)
         if fila["seleccion"] is None:
             raise HTTPException(409, "Primero seleccione al candidato")
     preguntas, origen = entrevista.sugerir(vac, fila["criterios"], fila["extraccion"])
@@ -264,9 +315,11 @@ def regenerar_preguntas(candidato_id: int):
 
 
 @app.delete("/api/candidatos/{candidato_id}/seleccion", status_code=204)
-def quitar_seleccion(candidato_id: int):
+def quitar_seleccion(candidato_id: int, u: dict = Usuario):
     with db.conectar() as con:
-        if not db.quitar_seleccion(con, candidato_id):
+        c = db.candidato(con, candidato_id)
+        if c is None or db.obtener_vacante(con, c["vacante_id"], u["id"]) is None \
+                or not db.quitar_seleccion(con, candidato_id):
             raise HTTPException(404, "El candidato no estaba seleccionado")
 
 

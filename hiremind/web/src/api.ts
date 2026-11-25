@@ -140,6 +140,12 @@ export interface Resumen {
   por_vacante: Vacante[];
 }
 
+export interface Usuario {
+  id: number;
+  usuario: string;
+  nombre: string;
+}
+
 export class ErrorApi extends Error {
   constructor(public errores: string[], public status: number) {
     super(errores.join(" · "));
@@ -152,6 +158,10 @@ async function pedir<T>(ruta: string, init?: RequestInit): Promise<T> {
     r = await fetch(`/api${ruta}`, init);
   } catch {
     throw new ErrorApi(["No se pudo conectar con la API local (¿está encendido el servidor en el puerto 8000?)"], 0);
+  }
+  if (r.status === 401 && ruta !== "/login" && ruta !== "/yo" && location.pathname !== "/login") {
+    // la sesión venció o se cerró en otra pestaña: volver al inicio de sesión
+    location.assign(`/login?volver=${encodeURIComponent(location.pathname)}`);
   }
   if (r.status === 204) return undefined as T;
   const cuerpo = await r.json().catch(() => ({}));
@@ -171,6 +181,9 @@ const json = (metodo: string, datos: unknown): RequestInit => ({
 });
 
 export const api = {
+  login: (usuario: string, clave: string) => pedir<Usuario>("/login", json("POST", { usuario, clave })),
+  logout: () => pedir<void>("/logout", { method: "POST" }),
+  yo: () => pedir<Usuario>("/yo"),
   estado: () => pedir<EstadoServidor>("/estado"),
   resumen: () => pedir<Resumen>("/resumen"),
   vacantes: () => pedir<Vacante[]>("/vacantes"),
