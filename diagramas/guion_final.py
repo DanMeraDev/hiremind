@@ -1,4 +1,4 @@
-"""Genera el guion de la exposición final (HTML) con miniaturas de las 27 diapositivas.
+"""Genera el guion de la exposición final (HTML) con miniaturas de las 29 diapositivas.
 
 Uso: python3 guion_final.py <carpeta_miniaturas s-01.png...> <salida.html>
 """
@@ -42,7 +42,8 @@ SL = [
 "El criterio fue **reducir complejidad**: nada de servidores externos, para que se pueda instalar en cualquier PYME.",
 ]),
 ("Flujo de trabajo y evaluación responsable", "0:45", [
-"Para el usuario son siete pasos: **iniciar LM Studio, crear la vacante con sus pesos, subir los CV, y revisar el ranking**; lo demás lo hace el agente.",
+"Para el usuario son ocho pasos: **iniciar LM Studio, crear la vacante con sus pesos, subir los CV, revisar el ranking y elegir a quién entrevistar**; lo demás lo hace el agente.",
+"El paso 8 es nuevo: al **elegir un candidato**, el agente le envía un **correo** y prepara **preguntas para la entrevista**.",
 "Cuatro principios: **sin datos sensibles**, **evidencia verificable**, **el LLM no pone la nota** y **decisión humana**: nadie se descarta automáticamente.",
 ]),
 ("Métricas y protocolo de evaluación", "0:45", [
@@ -53,6 +54,11 @@ SL = [
 "**Exactitud por criterio: 100 %** y **F1 macro 1,00** (meta 0,90). **NDCG@5 promedio 0,98** (meta 0,85). **JSON válido al primer intento: 100 %**. **Tiempo: 9,5 s en promedio y 12 s en el P95** (meta 15 s). **Equidad: 24 de 24** variantes sin cambio de puntaje.",
 "Una aclaración honesta: **15 CV es un conjunto pequeño y los armamos nosotros**. Los resultados muestran que el diseño funciona, pero **falta validarlo con CV reales de PYMEs**. El script es reproducible: hiremind/scripts/evaluar.py.",
 ]),
+("Prueba con CV del grupo", "1:00", [
+"Además del set etiquetado, cada integrante consiguió hojas de vida reales para un puesto: **95 CV en 4 vacantes**: auxiliar de farmacia, cocinero, game designer y técnico de redes.",
+"**94 de 95 se evaluaron** sin intervención; el que faltó era un **escaneo** y fue a revisión manual, como estaba previsto. Mediana de **13 s por CV**; todos dieron **JSON válido al primer intento** salvo 1.",
+"Ojo: aquí **no hay etiquetas de referencia**, así que esto muestra **cobertura y estabilidad, no exactitud**. Los promedios bajos son normales: la mayoría de postulantes no cumple todo. En Farmacia, 6 evaluaciones tienen **correcciones de una persona**.",
+]),
 ("Mejor que buscar palabras", "1:00", [
 "¿Hace falta un LLM? Lo comparamos con lo que haría una persona con **Ctrl+F**: buscar las palabras clave de cada criterio.",
 "La búsqueda acierta el **81,4 %** de los criterios con un **F1 de 0,59**; HireMind llega al **100 % con F1 1,00**. La diferencia está en lo que la búsqueda no entiende: **experiencia en un proyecto, una carrera en curso o contar años**.",
@@ -62,13 +68,18 @@ SL = [
 "Para la equidad tomamos **6 CV y creamos 4 variantes de cada uno**: sin datos personales, con edad y estado civil, con otra nacionalidad, y con un nombre del otro género. **Las 24 variantes dieron exactamente el mismo puntaje** que el original.",
 "Además: el **CV escaneado fue a revisión manual**; en el **CV trampa**, un diseñador sin Python, **el agente no inventó Python**; **los 15 CV dieron el mismo puntaje en las 3 corridas**; y **no hubo citas inventadas**.",
 "Sobre los datos personales: **el filtro limpió 8 de 9 CV**; en uno se le pasó un dato. **No cambió el puntaje**, porque esos datos nunca son criterio, pero lo dejamos anotado como mejora.",
+"Un caso real: el aviso de **Farmareds pedía «edad entre 20 y 40 años»**. HireMind **rechaza ese criterio** porque es discriminatorio. Y las **preguntas de entrevista pasan por el mismo filtro**.",
 ]),
 ("La solución implementada", "1:30", [
 "Esta es la aplicación real. **Panel** con procesos y distribución de puntajes; **vacante** con criterios y pesos que suman 100 %; **carga en lote** arrastrando los PDF; y el **ranking**, donde cada candidato tiene su **justificación y la cita del CV** que respalda cada criterio.",
 "(Si hay tiempo: **demo en vivo** creando una vacante y subiendo 3 CV.)",
 ]),
+("Del ranking a la entrevista", "1:00", [
+"Lo nuevo: cuando la persona **elige a un candidato**, HireMind hace tres cosas. **Elige**: el reclutador lo marca desde el ranking. **Avisa**: arma un **correo** con el puesto y lo que destacó de su CV, con **vista previa** antes de enviar. **Prepara**: genera **6 a 8 preguntas** a partir de los criterios y la evidencia del CV, y pide verificar lo que salió parcial.",
+"Las preguntas **no usan datos personales**; si LM Studio está apagado, se arman con una **plantilla por criterio**. En la demo el correo va en **modo prueba** a una cuenta del equipo.",
+]),
 ("Limitaciones y futuro", "1:00", [
-"Limitaciones: **solo lee PDF con texto**, los escaneados van a revisión manual; la rúbrica usa **palabras clave**, así que un sinónimo no previsto no cuenta; el modelo de **4B necesita 16 GB** y con CV largos o desordenados baja la exactitud; la **evaluación es acotada**; y la app **aún no limita los cupos** de cada plan.",
+"Limitaciones: **solo lee PDF con texto**, los escaneados van a revisión manual; la rúbrica usa **palabras clave**, así que un sinónimo no previsto no cuenta; el modelo de **4B con 4 hilos ocupa unos 8 GB** entre RAM y swap, y un CV de 5 páginas tarda 49 s; la **exactitud se midió en 15 CV etiquetados**, los 95 del grupo no tienen etiquetas; el **correo va por Gmail**, con límite diario; y la app **aún no limita los cupos** de cada plan.",
 "A futuro: en el **corto plazo**, OCR local con Tesseract y sinónimos con embeddings; a **mediano plazo**, modelos de 7 u 8B y los cupos de licencia; a **largo plazo**, un **piloto con 3 PYMEs** y la nube opcional para campañas masivas.",
 ]),
 ("Modelo de negocio híbrido", "1:00", [
@@ -109,11 +120,11 @@ SL = [
 ]),
 ("Conclusiones", "1:00", [
 "Cuatro cifras resumen el proyecto: **100 % de criterios bien clasificados con un modelo de 4B** que corre en una laptop; **9,5 s por hoja de vida**, o sea 60 CV en menos de 10 minutos y sin internet; **24 de 24 variantes sin cambio de puntaje** al cambiar datos personales; y **$374 de entrada**, menos que una sola contratación por agencia.",
-"La lección principal: **separar tareas funciona**. El LLM lee y redacta, Python decide con reglas fijas y **la persona tiene la última palabra**.",
+"La lección principal: **separar tareas funciona**. El LLM lee y redacta, Python puntúa con reglas fijas, **la persona elige** y el agente avisa y prepara la entrevista.",
 ]),
 ("Recomendaciones", "0:45", [
 "**A las PYMEs:** definir criterios y pesos antes de abrir la vacante, revisar siempre el top 5 y pedir los CV en PDF digital.",
-"**Al producto:** un piloto con 3 PYMEs y CV reales antes de vender, OCR y sinónimos, y los cupos de cada plan. **Al negocio:** vender con una demo sobre los CV del propio cliente, ofrecer pago diferido y medir cuántos clientes pasan de la base al Plan Crecimiento.",
+"**Al producto:** un piloto con 3 PYMEs y CV reales antes de vender, OCR y sinónimos, y **correo con dominio propio y agenda de entrevistas**. **Al negocio:** vender con una demo sobre los CV del propio cliente, ofrecer pago diferido y medir cuántos clientes pasan de la base al Plan Crecimiento.",
 ]),
 ("Referencias bibliográficas", "0:15", [
 "Las fuentes de los datos del problema, de la métrica NDCG, del modelo Qwen3 y de los marcos de equidad y riesgo de IA (NIST AI RMF), más la LOPDP del Ecuador.",
@@ -132,6 +143,8 @@ FAQ = [
 ("¿Por qué local y no en la nube?", "Privacidad (LOPDP), sin costos por uso y funciona sin internet estable. La nube es opcional y solo en el Plan Escala."),
 ("¿Por qué suscripción anual y no mensual?", "Las PYMEs contratan por temporadas: una mensualidad en meses sin vacantes se siente como gasto perdido y se cancela. Lo anual se presupuesta una vez y cuesta menos que doce cuotas."),
 ("¿Qué pasa si no renuevo?", "La licencia base es suya para siempre: vuelve al cupo base (3 vacantes activas, 300 CV al año) y puede pedir soporte puntual."),
+("¿El correo le llega de verdad al candidato?", "En producción sí, por SMTP. Para la demo está en modo prueba: todos los correos se redirigen a una cuenta del equipo y el asunto indica a quién iban."),
+("¿Por qué el promedio de Farmacia es tan bajo?", "Porque la mayoría de CV reales no cumple varios criterios del aviso, y 6 evaluaciones tienen correcciones humanas. En esos 95 CV no hay etiquetas, así que miden cobertura, no exactitud."),
 ("¿La IA decide a quién contratar?", "No. Ordena todos los CV con justificación; una persona revisa el top 5, corrige y decide a quién entrevistar."),
 ]
 
@@ -141,8 +154,8 @@ def md(t):
 
 
 def thumb(i):
-    b = (TH / f"s-{i:02d}.png").read_bytes()
-    return "data:image/png;base64," + base64.b64encode(b).decode()
+    b = (TH / f"s-{i:02d}.jpg").read_bytes()
+    return "data:image/jpeg;base64," + base64.b64encode(b).decode()
 
 
 def mins(t):

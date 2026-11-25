@@ -112,17 +112,17 @@ slide("07_herramientas", "noche", "Herramientas y su rol", "Cuatro capas, todo c
 pasos = [("1", "Iniciar LM Studio", "carga Qwen3-4B"), ("2", "Crear vacante", "criterios y pesos = 100 %"),
          ("3", "Subir CV", "varios PDF a la vez"), ("4", "Leer y limpiar", "PyMuPDF + quitar datos personales"),
          ("5", "Extraer a JSON", "el LLM, con citas textuales"), ("6", "Verificar y puntuar", "Python: Σ wᵢ·sᵢ"),
-         ("7", "Revisar ranking", "la persona decide")]
+         ("7", "Revisar ranking", "la persona decide"), ("8", "Elegir y entrevistar", "correo + preguntas sugeridas")]
 c = ""
 for i, (n, t, d) in enumerate(pasos):
-    x = 110 + i * 243
-    color = CORAL if i in (0, 1, 2, 6) else MENTA
-    c += f'<div style="position:absolute;left:{x}px;top:300px;width:215px">' \
+    x = 110 + i * 214
+    color = CORAL if i in (0, 1, 2, 6) else MENTA if i < 7 else AZUL
+    c += f'<div style="position:absolute;left:{x}px;top:300px;width:196px">' \
          f'<div style="width:86px;height:86px;background:{color};border:4px solid {NOCHE};display:flex;align-items:center;justify-content:center" class="big"><span style="font-size:64px">{n}</span></div>' \
          f'<div style="font-size:28px;font-weight:800;margin-top:18px;line-height:1.1">{t}</div><div style="font-size:21px;font-weight:500;margin-top:8px">{d}</div></div>'
-    if i < 6:
-        c += f'<div style="position:absolute;left:{x + 100}px;top:338px;width:126px;height:6px;background:{NOCHE}"></div>'
-c += f'<div style="position:absolute;left:110px;top:560px;font-size:22px;font-weight:700"><span style="display:inline-block;width:22px;height:22px;background:{CORAL};border:3px solid {NOCHE};vertical-align:-4px"></span> reclutador &nbsp;&nbsp; <span style="display:inline-block;width:22px;height:22px;background:{MENTA};border:3px solid {NOCHE};vertical-align:-4px"></span> agente</div>'
+    if i < 7:
+        c += f'<div style="position:absolute;left:{x + 96}px;top:338px;width:112px;height:6px;background:{NOCHE}"></div>'
+c += f'<div style="position:absolute;left:110px;top:560px;font-size:22px;font-weight:700"><span style="display:inline-block;width:22px;height:22px;background:{CORAL};border:3px solid {NOCHE};vertical-align:-4px"></span> reclutador &nbsp;&nbsp; <span style="display:inline-block;width:22px;height:22px;background:{MENTA};border:3px solid {NOCHE};vertical-align:-4px"></span> agente &nbsp;&nbsp; <span style="display:inline-block;width:22px;height:22px;background:{AZUL};border:3px solid {NOCHE};vertical-align:-4px"></span> ambos (nuevo)</div>'
 principios = [("Sin datos sensibles", "edad, estado civil, nacionalidad, foto: se quitan antes del modelo"),
               ("Evidencia verificable", "cada dato trae una cita; si no está en el CV, no cuenta"),
               ("El LLM no pone la nota", "extrae y redacta; Python aplica reglas fijas"),
@@ -149,6 +149,29 @@ for i, (n, v, m, ok) in enumerate(kpis):
 slide("10_resultados", "coral", "Resultados de la evaluación",
       f"{RES['n_criterios_evaluados']} criterios evaluados · 14 CV × 3 corridas · 2 vacantes · Qwen3-4B en GPU de 8 GB", c,
       "Referencia etiquetada a mano por el equipo · script reproducible: hiremind/scripts/evaluar.py")
+
+# =====================================================================================
+# 10b · Prueba con los 95 CV que aportó el grupo (hiremind/evaluacion/seeds_resultados.json)
+SEEDS = json.loads((AQUI.parent.parent / "hiremind" / "evaluacion" / "seeds_resultados.json").read_text())
+cols = [MENTA, AMBAR, AZUL, CORAL]
+c = ""
+for i, v in enumerate(SEEDS["vacantes"]):
+    x = 110 + i * 430
+    h = int(4.2 * v["promedio"])
+    top = (f'<div style="font-size:21px;font-weight:600;line-height:1.45">Mínimo <b>{dec(v["min"], 1).replace(",0", "")}</b> pts'
+           f'<br>Datos personales quitados en <b>{v["con_datos_quitados"]}</b> CV<br>JSON válido al 1.er intento: <b>{v["evaluados"] - v["reintentos"]} de {v["evaluados"]}</b></div>')
+    c += (f'<div style="position:absolute;left:{x}px;top:290px;width:390px"><div style="font-size:30px;font-weight:800">{v["titulo"]}</div>'
+          f'<div style="font-size:21px;font-weight:600;margin-top:2px">{v["cv"]} CV · {v["evaluados"]} evaluados' + (f' · {v["manual"]} a revisión manual' if v["manual"] else '') + '</div></div>'
+          f'<div style="position:absolute;left:{x}px;top:{820 - h}px;width:170px;height:{h}px;background:{cols[i]};border:4px solid {NOCHE}"></div>'
+          f'<div class="big" style="position:absolute;left:{x}px;top:{735 - h}px;width:170px;text-align:center;font-size:80px">{dec(v["promedio"], 1)}</div>'
+          f'<div style="position:absolute;left:{x + 190}px;top:420px;width:200px"><div class="lbl" style="font-size:17px">Máximo</div><div class="big" style="font-size:64px">{dec(v["max"], 1).replace(",0", "")}</div>'
+          f'<div class="lbl" style="font-size:17px;margin-top:10px">≥ 70 pts</div><div class="big" style="font-size:64px">{v["sobre_70"]}</div></div>'
+          f'<div style="position:absolute;left:{x}px;top:845px;width:390px">{top}</div>')
+c += f'<div style="position:absolute;left:110px;top:820px;width:1700px;height:5px;background:{NOCHE}"></div>'
+c += (f'<div style="position:absolute;right:110px;top:110px;text-align:right"><div class="big" style="font-size:120px">{SEEDS["evaluados"]} / {SEEDS["total"]}</div>'
+      f'<div style="font-size:22px;font-weight:700">evaluados · mediana {dec(SEEDS["seg_mediana"], 1)} s por CV</div></div>')
+slide("10b_seeds", "blanco", "Prueba con CV del grupo", "95 hojas de vida, 4 puestos reales · puntaje promedio por vacante (0-100)", c,
+      "Sin etiquetas de referencia: muestra cobertura y estabilidad, no exactitud · Farmacia incluye 6 evaluaciones corregidas por una persona")
 
 # =====================================================================================
 # 11 · Agente vs. búsqueda de palabras + NDCG
@@ -180,10 +203,10 @@ slide("11_exactitud", "blanco", "Mejor que buscar palabras", "Mismo CV, misma r�
 # 12 · Equidad y robustez
 eq_ok, eq_n = map(int, RES["equidad_sin_cambio"].split("/"))
 puntos = "".join(f'<div style="width:58px;height:58px;border:4px solid {NOCHE};background:{MENTA if i < eq_ok else CORAL}"></div>' for i in range(eq_n))
-c = box(110, 290, 860, 640, f'<div style="padding:34px 38px"><div class="lbl">Prueba de equidad</div>'
-        f'<div style="font-size:30px;font-weight:700;margin-top:12px;line-height:1.25">6 CV reales del set, cada uno con 4 variantes:<br>sin datos · edad y estado civil · otra nacionalidad · nombre del otro género</div>'
-        f'<div style="display:grid;grid-template-columns:repeat(8,58px);gap:14px;margin-top:34px">{puntos}</div>'
-        f'<div class="big" style="font-size:120px;margin-top:30px">{eq_ok} de {eq_n}</div><div style="font-size:26px;font-weight:600">variantes con el <b>mismo puntaje</b> que el CV original (máx. diferencia: {dec(RES["equidad_max_delta"], 1)} pts)</div></div>')
+c = box(110, 290, 860, 470, f'<div style="padding:28px 38px"><div class="lbl">Prueba de equidad</div>'
+        f'<div style="font-size:26px;font-weight:700;margin-top:10px;line-height:1.25">6 CV del set, cada uno con 4 variantes: sin datos · edad y estado civil · otra nacionalidad · nombre del otro género</div>'
+        f'<div style="display:grid;grid-template-columns:repeat(12,50px);gap:12px;margin-top:22px">{puntos.replace("58px", "50px")}</div>'
+        f'<div class="big" style="font-size:96px;margin-top:18px">{eq_ok} de {eq_n}</div><div style="font-size:26px;font-weight:600">variantes con el <b>mismo puntaje</b> que el CV original (máx. diferencia: {dec(RES["equidad_max_delta"], 1)} pts)</div></div>')
 rob = [("CV escaneado (solo imagen)", "va a revisión manual" if RES["escaneado_a_revision"] else "NO fue a revisión", RES["escaneado_a_revision"]),
        ("CV trampa: diseñador sin Python", "no se inventó Python" if RES["trampa_sin_python_inventado"] else "inventó Python", RES["trampa_sin_python_inventado"]),
        ("Datos personales detectados", RES["filtro_datos_personales"].replace("/", " de ") + " CV limpiados", True),
@@ -191,6 +214,9 @@ rob = [("CV escaneado (solo imagen)", "va a revisión manual" if RES["escaneado_
        ("Citas inventadas por el modelo", f'{RES["citas_no_verificadas"]} detectadas y descartadas', True)]
 for i, (t, v, ok) in enumerate(rob):
     c += box(1030, 290 + i * 130, 780, 108, f'<div style="display:flex;align-items:center;height:100%;padding:0 26px;gap:22px"><div style="width:56px;height:56px;flex:none;background:{MENTA if ok else AMBAR};border:4px solid {NOCHE};display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900">{"✓" if ok else "!"}</div><div><div style="font-size:21px;font-weight:700;opacity:.75">{t}</div><div style="font-size:30px;font-weight:800">{v}</div></div></div>')
+c += box(110, 790, 860, 170, f'<div style="padding:22px 30px"><div class="lbl" style="color:{CORAL}">Caso real · aviso de Farmareds</div>'
+        f'<div style="font-size:25px;font-weight:700;margin-top:8px;line-height:1.3">Pedía «edad entre 20 y 40 años»: HireMind <b>rechaza ese criterio</b>. '
+        f'Las preguntas de entrevista pasan por el <b>mismo filtro</b>.</div></div>')
 slide("12_equidad", "menta", "Equidad y robustez", "", c)
 
 # =====================================================================================
@@ -206,17 +232,34 @@ for i, (f, t) in enumerate(caps):
 slide("13_app", "noche", "La solución implementada", "Aplicación web local: React + FastAPI + agente en Python · demo en vivo", c)
 
 # =====================================================================================
+# 13b · Del ranking a la entrevista (funcionalidad nueva)
+c = (f'<div style="position:absolute;left:110px;top:270px;width:560px;height:760px;border:4px solid #fff;box-shadow:10px 10px 0 {MENTA};overflow:hidden;background:#fff">'
+     f'<img src="../capturas/sel_formulario.png" style="width:560px;display:block"></div>'
+     f'<div style="position:absolute;left:720px;top:270px;width:560px;height:760px;border:4px solid #fff;box-shadow:10px 10px 0 {CORAL};overflow:hidden;background:#fff">'
+     f'<img src="../capturas/sel_preguntas.png" style="width:560px;display:block"></div>')
+pasos_sel = [("1", "Elige", "la persona selecciona al candidato del ranking", CORAL),
+             ("2", "Avisa", "correo con el puesto y lo que destacó del CV · vista previa y confirmación", MENTA),
+             ("3", "Prepara", "6 a 8 preguntas desde los criterios y la evidencia del CV; verifica lo que salió parcial", AZUL)]
+for i, (n, t, d, col) in enumerate(pasos_sel):
+    y = 280 + i * 220
+    c += (f'<div style="position:absolute;left:1350px;top:{y}px;width:76px;height:76px;background:{col};border:4px solid #fff;display:flex;align-items:center;justify-content:center" class="big"><span style="font-size:56px;color:{NOCHE}">{n}</span></div>'
+          f'<div style="position:absolute;left:1450px;top:{y - 4}px;width:380px;color:#fff"><div class="big" style="font-size:58px">{t}</div><div style="font-size:23px;font-weight:600;line-height:1.3;margin-top:4px">{d}</div></div>')
+c += f'<div style="position:absolute;left:1350px;top:950px;width:480px;color:#fff;font-size:20px;font-weight:600;opacity:.8">Sin datos personales · con LM Studio apagado usa una plantilla por criterio</div>'
+slide("13b_seleccion", "noche", "Del ranking a la entrevista", "Nuevo: la decisión humana cierra el ciclo", c)
+
+# =====================================================================================
 # 14 · Limitaciones y consideraciones futuras
 lim = [("Solo PDF con texto", "los escaneados van a revisión manual (no hay OCR)"),
        ("Rúbrica por palabras clave", "sinónimos no previstos (p. ej. «contables») no cuentan"),
-       ("Modelo pequeño (4B)", "necesita 16 GB de RAM; con CV largos o desordenados baja la exactitud"),
-       ("Evaluación acotada", "15 CV ficticios y 2 vacantes; falta validar con CV reales de PYMEs"),
+       ("Modelo pequeño (4B)", "con 4 hilos usa ~8 GB (RAM + swap); un CV de 5 páginas: 49 s"),
+       ("Evaluación acotada", "exactitud medida en 15 CV etiquetados; los 95 del grupo no tienen etiquetas"),
+       ("Correo por Gmail SMTP", "límite diario de envíos; en la demo se usa modo prueba"),
        ("Cupos de licencia", "la app aún no limita vacantes ni CV por plan")]
 fut = [("Corto plazo", "OCR local (Tesseract) · sinónimos con embeddings"),
        ("Mediano plazo", "Qwen 7B/8B en equipos con más memoria · cupos y licencias"),
        ("Largo plazo", "piloto con 3 PYMEs · nube opcional para campañas masivas")]
 c = box(110, 290, 900, 700, '<div style="padding:34px 38px"><div class="chip" style="background:#FFE1E2">Limitaciones técnicas</div>' + "".join(
-    f'<div style="margin-top:26px;display:flex;gap:18px"><div style="width:18px;height:18px;flex:none;margin-top:9px;background:{CORAL};border:3px solid {NOCHE}"></div><div><div style="font-size:29px;font-weight:800">{t}</div><div style="font-size:22px;font-weight:500;margin-top:2px">{d}</div></div></div>'
+    f'<div style="margin-top:20px;display:flex;gap:18px"><div style="width:18px;height:18px;flex:none;margin-top:9px;background:{CORAL};border:3px solid {NOCHE}"></div><div><div style="font-size:29px;font-weight:800">{t}</div><div style="font-size:22px;font-weight:500;margin-top:2px">{d}</div></div></div>'
     for t, d in lim) + "</div>")
 c += f'<div class="lbl" style="position:absolute;left:1090px;top:290px;color:#fff">Consideraciones futuras</div>'
 for i, (t, d) in enumerate(fut):
@@ -379,13 +422,13 @@ c = ""
 for i, (v, d) in enumerate(concl):
     x, y = 110 + (i % 2) * 870, 290 + (i // 2) * 330
     c += box(x, y, 830, 290, f'<div style="padding:30px 36px"><div class="big" style="font-size:150px;color:{NOCHE}">{v}</div><div style="font-size:28px;font-weight:700;line-height:1.3;margin-top:4px">{d}</div></div>')
-c += f'<div style="position:absolute;left:110px;top:960px;color:#fff" class="p"><b>Separar tareas funciona:</b> el LLM lee y redacta, Python decide con reglas fijas y la persona tiene la última palabra.</div>'
+c += f'<div style="position:absolute;left:110px;top:960px;color:#fff" class="p"><b>Separar tareas funciona:</b> el LLM lee y redacta, Python puntúa con reglas fijas y la persona elige; el agente avisa y prepara la entrevista.</div>'
 slide("23_conclusiones", "noche", "Conclusiones", "", c)
 
 # =====================================================================================
 # 24 · Recomendaciones
 rec = [("Para las PYMEs", ["Definir criterios y pesos antes de abrir la vacante", "Revisar siempre el top 5 y corregir lo que falte", "Pedir CV en PDF digital, no escaneado"]),
-       ("Para el producto", ["Piloto con 3 PYMEs y CV reales antes de vender", "Agregar OCR y sinónimos con embeddings", "Implementar los cupos de cada plan"]),
+       ("Para el producto", ["Piloto con 3 PYMEs y CV reales antes de vender", "Agregar OCR y sinónimos con embeddings", "Correo con dominio propio y agenda de entrevistas"]),
        ("Para el negocio", ["Vender con una demo sobre los CV del propio cliente", "Ofrecer pago diferido para bajar la barrera", "Medir la conversión de base a Crecimiento"])]
 c = ""
 cols = [MENTA, AZUL, CORAL]

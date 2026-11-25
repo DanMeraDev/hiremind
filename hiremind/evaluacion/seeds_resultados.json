@@ -1,0 +1,117 @@
+{
+ "vacantes": [
+  {
+   "carpeta": "farmareds",
+   "titulo": "Auxiliar de farmacia",
+   "cv": 25,
+   "evaluados": 25,
+   "manual": 0,
+   "promedio": 32.4,
+   "max": 62.5,
+   "min": 15.0,
+   "sobre_70": 0,
+   "con_datos_quitados": 18,
+   "reintentos": 0,
+   "top3": [
+    [
+     "Paulina Anahí Olarte Cañar",
+     62.5
+    ],
+    [
+     "Maria Jose Del Pozo Moreira",
+     62.5
+    ],
+    [
+     "Jessica Paola Ayala",
+     62.5
+    ]
+   ]
+  },
+  {
+   "carpeta": "cocinero",
+   "titulo": "Cocinero/a",
+   "cv": 20,
+   "evaluados": 19,
+   "manual": 1,
+   "promedio": 41.3,
+   "max": 100.0,
+   "min": 0.0,
+   "sobre_70": 4,
+   "con_datos_quitados": 6,
+   "reintentos": 0,
+   "top3": [
+    [
+     "Carlos Andrés Mendoza Villacís",
+     100.0
+    ],
+    [
+     "Marcelo Iván Espinoza Játiva",
+     85.0
+    ],
+    [
+     "Juan David Ríos Caicedo",
+     80.0
+    ]
+   ]
+  },
+  {
+   "carpeta": "game_designer",
+   "titulo": "Game designer junior",
+   "cv": 25,
+   "evaluados": 25,
+   "manual": 0,
+   "promedio": 44.2,
+   "max": 87.5,
+   "min": 15.0,
+   "sobre_70": 2,
+   "con_datos_quitados": 25,
+   "reintentos": 0,
+   "top3": [
+    [
+     "Renata Solís Andrade",
+     87.5
+    ],
+    [
+     "Damián Paredes Viteri",
+     80.0
+    ],
+    [
+     "Luis Fernando Valle Rojas",
+     67.5
+    ]
+   ]
+  },
+  {
+   "carpeta": "tecnico_redes",
+   "titulo": "Técnico/a de redes",
+   "cv": 25,
+   "evaluados": 25,
+   "manual": 0,
+   "promedio": 55.6,
+   "max": 85.0,
+   "min": 15.0,
+   "sobre_70": 7,
+   "con_datos_quitados": 0,
+   "reintentos": 0,
+   "top3": [
+    [
+     "Carlos Andrés Mendoza",
+     85.0
+    ],
+    [
+     "Javier Eduardo Montalvo",
+     85.0
+    ],
+    [
+     "Valeria Cristina Ríos",
+     70.0
+    ]
+   ]
+  }
+ ],
+ "total": 95,
+ "evaluados": 94,
+ "seg_promedio": 21.1,
+ "seg_mediana": 13.3,
+ "seg_p95": 24.2
+}
