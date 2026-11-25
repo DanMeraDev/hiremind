@@ -96,6 +96,8 @@ python3.12 -m venv .venv
 
 En el panel hay un botón para cargar las 2 vacantes de ejemplo.
 
+**Demo en vivo con 3 usuarios** (celulares en el mismo WiFi): `python demo.py`. Revisa todo, carga el modelo para 3 usuarios y abre la app a la red. Pasos y guion en [DEMO.md](DEMO.md).
+
 ### Modo desarrollo (recarga en caliente)
 
 ```bash

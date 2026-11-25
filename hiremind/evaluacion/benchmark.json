@@ -1,0 +1,1189 @@
+{
+ "fecha": "2026-11-24 21:45",
+ "modelo": "qwen/qwen3-4b-2507",
+ "equipo": {
+  "cpu": "x86_64",
+  "nucleos": 16,
+  "ram_gb": 16.1
+ },
+ "corridas": [
+  {
+   "usuarios": 1,
+   "cv": 20,
+   "evaluados": 20,
+   "revision_manual": 0,
+   "errores": [],
+   "segundos_totales": 336.8,
+   "cv_por_minuto": 3.56,
+   "latencia_s": {
+    "promedio": 16.8,
+    "p50": 15.2,
+    "p95": 35.4,
+    "max": 46.6
+   },
+   "etapas_promedio_s": {
+    "leer_pdf": 0.004,
+    "quitar_datos": 0.0,
+    "llm_extraccion": 14.045,
+    "verificar_citas": 0.0,
+    "puntuar": 0.002,
+    "llm_justificacion": 2.785,
+    "guardar_db": 0.0
+   },
+   "tokens_por_cv": {
+    "entrada": 1488,
+    "salida": 939
+   },
+   "tokens_s_por_usuario": 55.8,
+   "tokens_s_total": 55.7,
+   "llamadas_llm_por_cv": 2.0,
+   "recursos": {
+    "cpu_prom": 7,
+    "cpu_max": 24,
+    "ram_pico_gb": 11.53,
+    "swap_pico_gb": 0.73,
+    "lmstudio_pico_gb": 5.37
+   },
+   "por_cv": [
+    {
+     "vacante": "farmareds",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 13.074915574999977,
+     "etapas": {
+      "leer_pdf": 0.0043299829999341455,
+      "quitar_datos": 0.00242572899969673,
+      "llm_extraccion": 10.438480078999874,
+      "verificar_citas": 0.0003138119996037858,
+      "puntuar": 0.0029412519998004427,
+      "llm_justificacion": 2.6258650350000607,
+      "guardar_db": 0.00026264600001013605
+     },
+     "llamadas": [
+      {
+       "s": 10.43221667600028,
+       "entrada": 805,
+       "salida": 596
+      },
+      {
+       "s": 2.6206245729999864,
+       "entrada": 667,
+       "salida": 117
+      }
+     ]
+    },
+    {
+     "vacante": "farmareds",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 18.17752451599972,
+     "etapas": {
+      "leer_pdf": 0.00280771999996432,
+      "quitar_datos": 0.00027192300012757187,
+      "llm_extraccion": 14.676183305999984,
+      "verificar_citas": 0.00033931999996639206,
+      "puntuar": 0.00274153500004104,
+      "llm_justificacion": 3.487562344000253,
+      "guardar_db": 0.0003321069998492021
+     },
+     "llamadas": [
+      {
+       "s": 14.67046516299979,
+       "entrada": 756,
+       "salida": 870
+      },
+      {
+       "s": 3.4832889669996803,
+       "entrada": 837,
+       "salida": 166
+      }
+     ]
+    },
+    {
+     "vacante": "farmareds",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 11.007772219999879,
+     "etapas": {
+      "leer_pdf": 0.027739809000195237,
+      "quitar_datos": 0.00039689900040684734,
+      "llm_extraccion": 8.73637900299991,
+      "verificar_citas": 0.00024018299973249668,
+      "puntuar": 0.003182848000051308,
+      "llm_justificacion": 2.2374542070001553,
+      "guardar_db": 0.00029784199978166725
+     },
+     "llamadas": [
+      {
+       "s": 8.731388662999962,
+       "entrada": 521,
+       "salida": 511
+      },
+      {
+       "s": 2.231058716000007,
+       "entrada": 607,
+       "salida": 97
+      }
+     ]
+    },
+    {
+     "vacante": "farmareds",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 46.58250009099993,
+     "etapas": {
+      "leer_pdf": 0.00587804499991762,
+      "quitar_datos": 0.0007029070002317894,
+      "llm_extraccion": 42.610928349000005,
+      "verificar_citas": 0.0010199049997936527,
+      "puntuar": 0.004649946999961685,
+      "llm_justificacion": 3.9517629319998377,
+      "guardar_db": 0.0002829640002346423
+     },
+     "llamadas": [
+      {
+       "s": 42.60590860399998,
+       "entrada": 1620,
+       "salida": 2410
+      },
+      {
+       "s": 3.947565799000131,
+       "entrada": 1213,
+       "salida": 132
+      }
+     ]
+    },
+    {
+     "vacante": "farmareds",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 12.97612327700017,
+     "etapas": {
+      "leer_pdf": 0.0016075739999905636,
+      "quitar_datos": 0.00019505799991748063,
+      "llm_extraccion": 10.933537348999835,
+      "verificar_citas": 0.0002945460000773892,
+      "puntuar": 0.0018177420001848077,
+      "llm_justificacion": 2.03810423799996,
+      "guardar_db": 0.0003134620001219446
+     },
+     "llamadas": [
+      {
+       "s": 10.928775679999944,
+       "entrada": 645,
+       "salida": 641
+      },
+      {
+       "s": 2.033959875000164,
+       "entrada": 635,
+       "salida": 99
+      }
+     ]
+    },
+    {
+     "vacante": "cocinero",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 35.44748846499988,
+     "etapas": {
+      "leer_pdf": 0.002773103999970772,
+      "quitar_datos": 0.0006262530000640254,
+      "llm_extraccion": 32.20076914299989,
+      "verificar_citas": 0.0006567899999936344,
+      "puntuar": 0.003708610000103363,
+      "llm_justificacion": 3.2314300699999876,
+      "guardar_db": 0.0003826530000878847
+     },
+     "llamadas": [
+      {
+       "s": 32.196108195000306,
+       "entrada": 1595,
+       "salida": 1808
+      },
+      {
+       "s": 3.221735148999869,
+       "entrada": 800,
+       "salida": 130
+      }
+     ]
+    },
+    {
+     "vacante": "cocinero",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 16.145597193999947,
+     "etapas": {
+      "leer_pdf": 0.002264084000216826,
+      "quitar_datos": 0.0002934839999397809,
+      "llm_extraccion": 13.485085487000106,
+      "verificar_citas": 0.00041401199996471405,
+      "puntuar": 0.0015629100003025087,
+      "llm_justificacion": 2.654290193000179,
+      "guardar_db": 0.0002921509999396221
+     },
+     "llamadas": [
+      {
+       "s": 13.48034825500008,
+       "entrada": 850,
+       "salida": 777
+      },
+      {
+       "s": 2.650234977999844,
+       "entrada": 671,
+       "salida": 123
+      }
+     ]
+    },
+    {
+     "vacante": "cocinero",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 8.928607654000189,
+     "etapas": {
+      "leer_pdf": 0.0017125330000453687,
+      "quitar_datos": 0.00015010300012363587,
+      "llm_extraccion": 6.117868345999796,
+      "verificar_citas": 0.00013950299990028725,
+      "puntuar": 0.0009752810001373291,
+      "llm_justificacion": 2.8067196709998825,
+      "guardar_db": 0.00026598199974614545
+     },
+     "llamadas": [
+      {
+       "s": 6.112743431000126,
+       "entrada": 491,
+       "salida": 345
+      },
+      {
+       "s": 2.802552866000042,
+       "entrada": 575,
+       "salida": 149
+      }
+     ]
+    },
+    {
+     "vacante": "cocinero",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 13.978703422000308,
+     "etapas": {
+      "leer_pdf": 0.0020068080002602073,
+      "quitar_datos": 0.0002308650000486523,
+      "llm_extraccion": 10.84942788699982,
+      "verificar_citas": 0.00030182999989847303,
+      "puntuar": 0.0013199719996919157,
+      "llm_justificacion": 3.123913103000177,
+      "guardar_db": 0.0002988350001942308
+     },
+     "llamadas": [
+      {
+       "s": 10.844009288000052,
+       "entrada": 724,
+       "salida": 642
+      },
+      {
+       "s": 3.1189144269997087,
+       "entrada": 586,
+       "salida": 161
+      }
+     ]
+    },
+    {
+     "vacante": "cocinero",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 15.242745674000162,
+     "etapas": {
+      "leer_pdf": 0.0022001430002092093,
+      "quitar_datos": 0.0003226089997951931,
+      "llm_extraccion": 12.090629314000125,
+      "verificar_citas": 0.00046019899991733837,
+      "puntuar": 0.002057654000054754,
+      "llm_justificacion": 3.1392395440002474,
+      "guardar_db": 0.0002889059996959986
+     },
+     "llamadas": [
+      {
+       "s": 12.080480345999604,
+       "entrada": 769,
+       "salida": 694
+      },
+      {
+       "s": 3.1350107419998494,
+       "entrada": 611,
+       "salida": 161
+      }
+     ]
+    },
+    {
+     "vacante": "game_designer",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 16.647765919999983,
+     "etapas": {
+      "leer_pdf": 0.0023964940000951174,
+      "quitar_datos": 0.0003281600002082996,
+      "llm_extraccion": 14.273505443999966,
+      "verificar_citas": 0.00037131099998077843,
+      "puntuar": 0.0025866429996312945,
+      "llm_justificacion": 2.366655099000127,
+      "guardar_db": 0.0003670229998533614
+     },
+     "llamadas": [
+      {
+       "s": 14.26813406500014,
+       "entrada": 833,
+       "salida": 827
+      },
+      {
+       "s": 2.360846152999784,
+       "entrada": 577,
+       "salida": 109
+      }
+     ]
+    },
+    {
+     "vacante": "game_designer",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 19.75570513799994,
+     "etapas": {
+      "leer_pdf": 0.0028517629998532357,
+      "quitar_datos": 0.0003629650000220863,
+      "llm_extraccion": 16.95582857499994,
+      "verificar_citas": 0.0003270469997005421,
+      "puntuar": 0.001403530000061437,
+      "llm_justificacion": 2.793461304000175,
+      "guardar_db": 0.0002979020000566379
+     },
+     "llamadas": [
+      {
+       "s": 16.948551567999857,
+       "entrada": 869,
+       "salida": 992
+      },
+      {
+       "s": 2.7893825539999852,
+       "entrada": 599,
+       "salida": 137
+      }
+     ]
+    },
+    {
+     "vacante": "game_designer",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 15.307147905999955,
+     "etapas": {
+      "leer_pdf": 0.002017909000187501,
+      "quitar_datos": 0.0003345919999446778,
+      "llm_extraccion": 12.663786573999914,
+      "verificar_citas": 0.00034325799970247317,
+      "puntuar": 0.0015204699998321303,
+      "llm_justificacion": 2.6383164890003172,
+      "guardar_db": 0.0002920710003309068
+     },
+     "llamadas": [
+      {
+       "s": 12.659153638999669,
+       "entrada": 822,
+       "salida": 733
+      },
+      {
+       "s": 2.6341869439997936,
+       "entrada": 599,
+       "salida": 128
+      }
+     ]
+    },
+    {
+     "vacante": "game_designer",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 15.823789101999864,
+     "etapas": {
+      "leer_pdf": 0.002199252000082197,
+      "quitar_datos": 0.0003233209999962128,
+      "llm_extraccion": 13.462785620999966,
+      "verificar_citas": 0.000336595999669953,
+      "puntuar": 0.0011652700000013283,
+      "llm_justificacion": 2.3489908330002436,
+      "guardar_db": 0.00047762200028955704
+     },
+     "llamadas": [
+      {
+       "s": 13.458053740000196,
+       "entrada": 835,
+       "salida": 782
+      },
+      {
+       "s": 2.345020247999855,
+       "entrada": 592,
+       "salida": 110
+      }
+     ]
+    },
+    {
+     "vacante": "game_designer",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 16.52443264600015,
+     "etapas": {
+      "leer_pdf": 0.0021975280001242936,
+      "quitar_datos": 0.00029737200020463206,
+      "llm_extraccion": 13.886415262000355,
+      "verificar_citas": 0.0005761379998148186,
+      "puntuar": 0.001843109000219556,
+      "llm_justificacion": 2.6256426250001823,
+      "guardar_db": 0.0002954070000669162
+     },
+     "llamadas": [
+      {
+       "s": 13.881204023999999,
+       "entrada": 830,
+       "salida": 801
+      },
+      {
+       "s": 2.6214302230000612,
+       "entrada": 556,
+       "salida": 131
+      }
+     ]
+    },
+    {
+     "vacante": "tecnico_redes",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 11.811114047000046,
+     "etapas": {
+      "leer_pdf": 0.002248003999739012,
+      "quitar_datos": 0.00019642100005512475,
+      "llm_extraccion": 9.621439130999988,
+      "verificar_citas": 0.0002574159998403047,
+      "puntuar": 0.0018869320001613232,
+      "llm_justificacion": 2.184552786999575,
+      "guardar_db": 0.00031038599991006777
+     },
+     "llamadas": [
+      {
+       "s": 9.616708792000281,
+       "entrada": 691,
+       "salida": 555
+      },
+      {
+       "s": 2.1803076329997566,
+       "entrada": 696,
+       "salida": 93
+      }
+     ]
+    },
+    {
+     "vacante": "tecnico_redes",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 12.158139921999918,
+     "etapas": {
+      "leer_pdf": 0.002439585000047373,
+      "quitar_datos": 0.00019062000001213164,
+      "llm_extraccion": 9.56142498500003,
+      "verificar_citas": 0.000251485000262619,
+      "puntuar": 0.001674320999882184,
+      "llm_justificacion": 2.5916214529997887,
+      "guardar_db": 0.0002881640002669883
+     },
+     "llamadas": [
+      {
+       "s": 9.55672656500019,
+       "entrada": 693,
+       "salida": 550
+      },
+      {
+       "s": 2.5876680309997937,
+       "entrada": 659,
+       "salida": 123
+      }
+     ]
+    },
+    {
+     "vacante": "tecnico_redes",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 12.315225303000261,
+     "etapas": {
+      "leer_pdf": 0.002425487999971665,
+      "quitar_datos": 0.00023605499973200494,
+      "llm_extraccion": 9.461619925999912,
+      "verificar_citas": 0.0002212379999946279,
+      "puntuar": 0.0016802899999674992,
+      "llm_justificacion": 2.848454775999926,
+      "guardar_db": 0.0003290009999545873
+     },
+     "llamadas": [
+      {
+       "s": 9.456431410999812,
+       "entrada": 666,
+       "salida": 546
+      },
+      {
+       "s": 2.8435925419998966,
+       "entrada": 667,
+       "salida": 139
+      }
+     ]
+    },
+    {
+     "vacante": "tecnico_redes",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 12.275665150999885,
+     "etapas": {
+      "leer_pdf": 0.0023405360002470843,
+      "quitar_datos": 0.00018554000007497962,
+      "llm_extraccion": 9.15100602199982,
+      "verificar_citas": 0.0002611730001262913,
+      "puntuar": 0.0015568470003017865,
+      "llm_justificacion": 3.1182025860002796,
+      "guardar_db": 0.00036800400039282977
+     },
+     "llamadas": [
+      {
+       "s": 9.146322946000055,
+       "entrada": 656,
+       "salida": 523
+      },
+      {
+       "s": 3.113130055000056,
+       "entrada": 625,
+       "salida": 161
+      }
+     ]
+    },
+    {
+     "vacante": "tecnico_redes",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 12.615296424000007,
+     "etapas": {
+      "leer_pdf": 0.0026625540003806236,
+      "quitar_datos": 0.000282823999896209,
+      "llm_extraccion": 9.72072633300013,
+      "verificar_citas": 0.00019449699993856484,
+      "puntuar": 0.0012396789998092572,
+      "llm_justificacion": 2.8825675240000237,
+      "guardar_db": 0.0002403829998911533
+     },
+     "llamadas": [
+      {
+       "s": 9.714689461000034,
+       "entrada": 680,
+       "salida": 559
+      },
+      {
+       "s": 2.8775457990000177,
+       "entrada": 628,
+       "salida": 146
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "usuarios": 3,
+   "cv": 20,
+   "evaluados": 20,
+   "revision_manual": 0,
+   "errores": [],
+   "segundos_totales": 175.9,
+   "cv_por_minuto": 6.82,
+   "latencia_s": {
+    "promedio": 26.1,
+    "p50": 22.4,
+    "p95": 58.3,
+    "max": 75.0
+   },
+   "etapas_promedio_s": {
+    "leer_pdf": 0.004,
+    "quitar_datos": 0.0,
+    "llm_extraccion": 21.95,
+    "verificar_citas": 0.0,
+    "puntuar": 0.002,
+    "llm_justificacion": 4.091,
+    "guardar_db": 0.0
+   },
+   "tokens_por_cv": {
+    "entrada": 1488,
+    "salida": 936
+   },
+   "tokens_s_por_usuario": 36.0,
+   "tokens_s_total": 106.4,
+   "llamadas_llm_por_cv": 2.0,
+   "recursos": {
+    "cpu_prom": 7,
+    "cpu_max": 58,
+    "ram_pico_gb": 14.0,
+    "swap_pico_gb": 1.68,
+    "lmstudio_pico_gb": 6.51
+   },
+   "por_cv": [
+    {
+     "vacante": "farmareds",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 19.490186510000058,
+     "etapas": {
+      "leer_pdf": 0.0018934029999400082,
+      "quitar_datos": 0.0002753389999270439,
+      "llm_extraccion": 15.362613473999772,
+      "verificar_citas": 0.00036784400026590447,
+      "puntuar": 0.0012766190002366784,
+      "llm_justificacion": 4.122113554999942,
+      "guardar_db": 0.00028614000029847375
+     },
+     "llamadas": [
+      {
+       "s": 15.328709479999816,
+       "entrada": 805,
+       "salida": 596
+      },
+      {
+       "s": 4.117968353999913,
+       "entrada": 667,
+       "salida": 121
+      }
+     ]
+    },
+    {
+     "vacante": "farmareds",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 28.26335901399989,
+     "etapas": {
+      "leer_pdf": 0.0025805200002650963,
+      "quitar_datos": 0.000268878000042605,
+      "llm_extraccion": 23.289318489999914,
+      "verificar_citas": 0.0004895439997198991,
+      "puntuar": 0.002419385999928636,
+      "llm_justificacion": 4.964388873000189,
+      "guardar_db": 0.0003085120001742325
+     },
+     "llamadas": [
+      {
+       "s": 23.256696916000237,
+       "entrada": 756,
+       "salida": 870
+      },
+      {
+       "s": 4.959351627999695,
+       "entrada": 837,
+       "salida": 166
+      }
+     ]
+    },
+    {
+     "vacante": "farmareds",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 16.83974047799984,
+     "etapas": {
+      "leer_pdf": 0.025741892000041844,
+      "quitar_datos": 0.0002556429999458487,
+      "llm_extraccion": 12.684357956999975,
+      "verificar_citas": 0.00021644800017384114,
+      "puntuar": 0.002118086000336916,
+      "llm_justificacion": 4.120252184000037,
+      "guardar_db": 0.0002582870001788251
+     },
+     "llamadas": [
+      {
+       "s": 12.676206355999966,
+       "entrada": 521,
+       "salida": 510
+      },
+      {
+       "s": 4.115834066999923,
+       "entrada": 607,
+       "salida": 109
+      }
+     ]
+    },
+    {
+     "vacante": "farmareds",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 75.01948772300011,
+     "etapas": {
+      "leer_pdf": 0.005594265000127052,
+      "quitar_datos": 0.0007781980002619093,
+      "llm_extraccion": 71.39787676100013,
+      "verificar_citas": 0.000926888999856601,
+      "puntuar": 0.0044297780000306375,
+      "llm_justificacion": 3.6080616369999916,
+      "guardar_db": 0.0003151349997096986
+     },
+     "llamadas": [
+      {
+       "s": 71.39311789199974,
+       "entrada": 1620,
+       "salida": 2410
+      },
+      {
+       "s": 3.603788472999895,
+       "entrada": 1213,
+       "salida": 134
+      }
+     ]
+    },
+    {
+     "vacante": "farmareds",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 22.02987694600006,
+     "etapas": {
+      "leer_pdf": 0.001949878999766952,
+      "quitar_datos": 0.00026685300008466584,
+      "llm_extraccion": 18.289790591999918,
+      "verificar_citas": 0.0005832010001540766,
+      "puntuar": 0.002557466000325803,
+      "llm_justificacion": 3.734045466000225,
+      "guardar_db": 0.00035156299964000937
+     },
+     "llamadas": [
+      {
+       "s": 18.28301606900004,
+       "entrada": 645,
+       "salida": 680
+      },
+      {
+       "s": 3.729900914999689,
+       "entrada": 635,
+       "salida": 118
+      }
+     ]
+    },
+    {
+     "vacante": "cocinero",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 58.25759610899968,
+     "etapas": {
+      "leer_pdf": 0.0031994969999686873,
+      "quitar_datos": 0.0006860850003249652,
+      "llm_extraccion": 52.45193121400007,
+      "verificar_citas": 0.0007692419999330014,
+      "puntuar": 0.002648267000040505,
+      "llm_justificacion": 5.790690019000067,
+      "guardar_db": 0.0003990529999100545
+     },
+     "llamadas": [
+      {
+       "s": 52.44690649300037,
+       "entrada": 1595,
+       "salida": 1793
+      },
+      {
+       "s": 5.78645541800006,
+       "entrada": 800,
+       "salida": 150
+      }
+     ]
+    },
+    {
+     "vacante": "cocinero",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 26.34936375799998,
+     "etapas": {
+      "leer_pdf": 0.0025196540000251844,
+      "quitar_datos": 0.00030472500020550797,
+      "llm_extraccion": 21.762098452999908,
+      "verificar_citas": 0.00045092099981047795,
+      "puntuar": 0.0025032429998645966,
+      "llm_justificacion": 4.573606071000086,
+      "guardar_db": 0.00037833399983355775
+     },
+     "llamadas": [
+      {
+       "s": 21.757270873999914,
+       "entrada": 850,
+       "salida": 777
+      },
+      {
+       "s": 4.569525059999705,
+       "entrada": 671,
+       "salida": 129
+      }
+     ]
+    },
+    {
+     "vacante": "cocinero",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 16.811367200000404,
+     "etapas": {
+      "leer_pdf": 0.0015637510000487964,
+      "quitar_datos": 0.00012738099985654117,
+      "llm_extraccion": 10.602271156999905,
+      "verificar_citas": 0.00018389700016996358,
+      "puntuar": 0.0008707830002094852,
+      "llm_justificacion": 6.204554864999864,
+      "guardar_db": 0.0003147339998577081
+     },
+     "llamadas": [
+      {
+       "s": 10.597322089000045,
+       "entrada": 491,
+       "salida": 345
+      },
+      {
+       "s": 6.200275691000115,
+       "entrada": 575,
+       "salida": 150
+      }
+     ]
+    },
+    {
+     "vacante": "cocinero",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 19.917409992999637,
+     "etapas": {
+      "leer_pdf": 0.0017726549999679264,
+      "quitar_datos": 0.00021973399998387322,
+      "llm_extraccion": 15.663302546000068,
+      "verificar_citas": 0.00041285899987997254,
+      "puntuar": 0.0016912109999793756,
+      "llm_justificacion": 4.248276884999996,
+      "guardar_db": 0.0003092639999522362
+     },
+     "llamadas": [
+      {
+       "s": 15.65830936500015,
+       "entrada": 724,
+       "salida": 586
+      },
+      {
+       "s": 4.240138657999978,
+       "entrada": 586,
+       "salida": 155
+      }
+     ]
+    },
+    {
+     "vacante": "cocinero",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 22.42189257500013,
+     "etapas": {
+      "leer_pdf": 0.0017910400001710514,
+      "quitar_datos": 0.0002695080002013128,
+      "llm_extraccion": 18.52399659799994,
+      "verificar_citas": 0.0004030200002489437,
+      "puntuar": 0.0013336960000742693,
+      "llm_justificacion": 3.8863468949998605,
+      "guardar_db": 0.0003386889998182596
+     },
+     "llamadas": [
+      {
+       "s": 18.51929899300012,
+       "entrada": 769,
+       "salida": 694
+      },
+      {
+       "s": 3.8812988199997562,
+       "entrada": 611,
+       "salida": 139
+      }
+     ]
+    },
+    {
+     "vacante": "game_designer",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 25.050280546000067,
+     "etapas": {
+      "leer_pdf": 0.0028478230001383054,
+      "quitar_datos": 0.00041913100039892015,
+      "llm_extraccion": 21.475314568000158,
+      "verificar_citas": 0.0004666300001190393,
+      "puntuar": 0.0014027769998392614,
+      "llm_justificacion": 3.5619514009999875,
+      "guardar_db": 0.00032785800021883915
+     },
+     "llamadas": [
+      {
+       "s": 21.470054722999976,
+       "entrada": 833,
+       "salida": 827
+      },
+      {
+       "s": 3.5578407339999103,
+       "entrada": 577,
+       "salida": 122
+      }
+     ]
+    },
+    {
+     "vacante": "game_designer",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 30.46706405699979,
+     "etapas": {
+      "leer_pdf": 0.0023727069997221406,
+      "quitar_datos": 0.0003245120001338364,
+      "llm_extraccion": 26.374635462999777,
+      "verificar_citas": 0.0004967180002495297,
+      "puntuar": 0.0014530919997923775,
+      "llm_justificacion": 4.079845810000279,
+      "guardar_db": 0.00034541200011517503
+     },
+     "llamadas": [
+      {
+       "s": 26.369602527000097,
+       "entrada": 869,
+       "salida": 992
+      },
+      {
+       "s": 4.07539242699977,
+       "entrada": 599,
+       "salida": 127
+      }
+     ]
+    },
+    {
+     "vacante": "game_designer",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 23.96386104000021,
+     "etapas": {
+      "leer_pdf": 0.0023348049999185605,
+      "quitar_datos": 0.00031519499998466927,
+      "llm_extraccion": 18.797474285000135,
+      "verificar_citas": 0.0003940130000046338,
+      "puntuar": 0.001531159000023763,
+      "llm_justificacion": 5.160082057999716,
+      "guardar_db": 0.0004061260001435585
+     },
+     "llamadas": [
+      {
+       "s": 18.792496893000134,
+       "entrada": 822,
+       "salida": 733
+      },
+      {
+       "s": 5.155975539999872,
+       "entrada": 599,
+       "salida": 156
+      }
+     ]
+    },
+    {
+     "vacante": "game_designer",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 24.228969484999652,
+     "etapas": {
+      "leer_pdf": 0.0022689610000270477,
+      "quitar_datos": 0.00031311099974118406,
+      "llm_extraccion": 21.176071472999865,
+      "verificar_citas": 0.0005045220000283734,
+      "puntuar": 0.0010800280001603824,
+      "llm_justificacion": 3.041216600000098,
+      "guardar_db": 0.00032653600010235095
+     },
+     "llamadas": [
+      {
+       "s": 21.17119471099977,
+       "entrada": 835,
+       "salida": 782
+      },
+      {
+       "s": 3.036040895000042,
+       "entrada": 592,
+       "salida": 110
+      }
+     ]
+    },
+    {
+     "vacante": "game_designer",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 24.487140872000055,
+     "etapas": {
+      "leer_pdf": 0.0025825829998211702,
+      "quitar_datos": 0.00030746999982511625,
+      "llm_extraccion": 21.028202608000356,
+      "verificar_citas": 0.00046072899976934423,
+      "puntuar": 0.0019511620002958807,
+      "llm_justificacion": 3.4458177980000073,
+      "guardar_db": 0.0003373659997123468
+     },
+     "llamadas": [
+      {
+       "s": 21.02307742799985,
+       "entrada": 830,
+       "salida": 801
+      },
+      {
+       "s": 3.440847027000018,
+       "entrada": 556,
+       "salida": 97
+      }
+     ]
+    },
+    {
+     "vacante": "tecnico_redes",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 16.98924519000002,
+     "etapas": {
+      "leer_pdf": 0.002417221000087011,
+      "quitar_datos": 0.0002048659998763469,
+      "llm_extraccion": 13.913707878999958,
+      "verificar_citas": 0.0003392499997971754,
+      "puntuar": 0.0012217549997330934,
+      "llm_justificacion": 3.0638451789995997,
+      "guardar_db": 0.00032886000008147676
+     },
+     "llamadas": [
+      {
+       "s": 13.908919284000149,
+       "entrada": 691,
+       "salida": 555
+      },
+      {
+       "s": 3.0597862600002372,
+       "entrada": 696,
+       "salida": 93
+      }
+     ]
+    },
+    {
+     "vacante": "tecnico_redes",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 17.646153155999855,
+     "etapas": {
+      "leer_pdf": 0.0023927050001475436,
+      "quitar_datos": 0.00019807299986496218,
+      "llm_extraccion": 14.569271778999791,
+      "verificar_citas": 0.00019316499992783065,
+      "puntuar": 0.0012301309998292709,
+      "llm_justificacion": 3.065371407999919,
+      "guardar_db": 0.00031781000006958493
+     },
+     "llamadas": [
+      {
+       "s": 14.56434596500003,
+       "entrada": 693,
+       "salida": 550
+      },
+      {
+       "s": 3.0605749079995803,
+       "entrada": 659,
+       "salida": 99
+      }
+     ]
+    },
+    {
+     "vacante": "tecnico_redes",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 18.28911227200024,
+     "etapas": {
+      "leer_pdf": 0.002360745000260067,
+      "quitar_datos": 0.00019605999978011823,
+      "llm_extraccion": 14.326602974999787,
+      "verificar_citas": 0.00030248099983509746,
+      "puntuar": 0.0021253499999147607,
+      "llm_justificacion": 3.950015452000116,
+      "guardar_db": 0.00030131899984553456
+     },
+     "llamadas": [
+      {
+       "s": 14.321428610999646,
+       "entrada": 666,
+       "salida": 546
+      },
+      {
+       "s": 3.94580333399972,
+       "entrada": 667,
+       "salida": 139
+      }
+     ]
+    },
+    {
+     "vacante": "tecnico_redes",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 17.384805637000227,
+     "etapas": {
+      "leer_pdf": 0.002760949000276014,
+      "quitar_datos": 0.0002058079999187612,
+      "llm_extraccion": 13.084327693999967,
+      "verificar_citas": 0.00020096900016142172,
+      "puntuar": 0.0013060850001238578,
+      "llm_justificacion": 4.2953098309999405,
+      "guardar_db": 0.00036319600030765287
+     },
+     "llamadas": [
+      {
+       "s": 13.07870070700028,
+       "entrada": 656,
+       "salida": 523
+      },
+      {
+       "s": 4.290769153999918,
+       "entrada": 625,
+       "salida": 151
+      }
+     ]
+    },
+    {
+     "vacante": "tecnico_redes",
+     "estado": "evaluado",
+     "error": "",
+     "segundos": 17.137260642,
+     "etapas": {
+      "leer_pdf": 0.0025014100001499173,
+      "quitar_datos": 0.00018032000025414163,
+      "llm_extraccion": 14.229770310000276,
+      "verificar_citas": 0.00037036899993836414,
+      "puntuar": 0.002426177999950596,
+      "llm_justificacion": 2.901310550999824,
+      "guardar_db": 0.0003654189999906521
+     },
+     "llamadas": [
+      {
+       "s": 14.223169755000072,
+       "entrada": 680,
+       "salida": 559
+      },
+      {
+       "s": 2.892055046999758,
+       "entrada": 628,
+       "salida": 130
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "preguntas_entrevista": {
+  "n": 3,
+  "detalle": [
+   {
+    "s": 14.1,
+    "origen": "llm"
+   },
+   {
+    "s": 11.9,
+    "origen": "llm"
+   },
+   {
+    "s": 12.7,
+    "origen": "llm"
+   }
+  ],
+  "promedio_s": 12.9
+ }
+}
