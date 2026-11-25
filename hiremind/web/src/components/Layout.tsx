@@ -139,13 +139,13 @@ export function PestanasVacante({ id, titulo, evaluados }: { id: number; titulo:
         <span className="truncate text-noche dark:text-zinc-200">{titulo.split("·")[1]?.trim()}</span>
       </div>
       <Palabras como="h1" texto={titulo.split("·")[0].trim().toUpperCase()} className="mb-4 font-titulo text-5xl" />
-      <div className="flex gap-2 overflow-x-auto border-b-2 border-(--tinta)">
+      <div className="flex gap-2 overflow-x-auto overflow-y-hidden shadow-[inset_0_-2px_0_0_var(--tinta)]">
         {pasos.map((p) => {
           const activo = pathname === p.a;
           return (
             <Link key={p.a} to={p.a}
               className={clsx(
-                "-mb-0.5 flex shrink-0 items-center gap-2 border-b-[5px] px-3 py-2.5 text-sm font-extrabold uppercase tracking-wide transition-colors",
+                "flex shrink-0 items-center gap-2 border-b-[5px] px-3 py-2.5 text-sm font-extrabold uppercase tracking-wide transition-colors",
                 activo ? "border-coral text-noche dark:text-white"
                   : "border-transparent text-zinc-500 hover:border-zinc-300 hover:text-noche dark:hover:text-white",
               )}>

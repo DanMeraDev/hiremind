@@ -1,0 +1,30 @@
+25 CVs FICTICIOS - VACANTE GAME DESIGNER
+Todos los perfiles y datos de contacto son inventados. Los correos usan el dominio reservado .example.
+El conjunto incluye perfiles junior, estudiantes, autodidactas, personas en transición profesional y candidatos con experiencia relacionada o profesional.
+
+NOMBRE | EDAD | SEXO | CIUDAD | TRAYECTORIA
+01. Ana Lucía Torres Benítez | 22 | Femenino | Quito, Pichincha | Sin experiencia profesional formal
+02. Bruno Cedeño Alcívar | 28 | Masculino | Guayaquil, Guayas | Sin experiencia profesional formal
+03. Camila Andrade Loor | 25 | Femenino | Cuenca, Azuay | Con experiencia profesional
+04. Damián Paredes Viteri | 31 | Masculino | Quito, Pichincha | Con experiencia profesional
+05. Emilia Viteri Jaramillo | 20 | Femenino | Loja, Loja | Sin experiencia profesional formal
+06. Fabricio Lema Hidalgo | 34 | Masculino | Ambato, Tungurahua | Con experiencia profesional
+07. Gabriela Mena Solís | 26 | Femenino | Quito, Pichincha | Con experiencia profesional
+08. Hugo Salazar Montalvo | 23 | Masculino | Manta, Manabí | Con experiencia profesional
+09. Isabela Ruiz Cárdenas | 29 | Femenino | Cuenca, Azuay | Con experiencia profesional
+10. Joaquín Mora Cevallos | 19 | Masculino | Riobamba, Chimborazo | Sin experiencia profesional formal
+11. Karen Zambrano Macías | 33 | Femenino | Guayaquil, Guayas | Con experiencia profesional
+12. Luis Fernando Valle Rojas | 27 | Masculino | Ibarra, Imbabura | Con experiencia profesional
+13. Martina Cobo Benítez | 24 | Femenino | Quito, Pichincha | Con experiencia profesional
+14. Nicolás Ochoa Narváez | 30 | Masculino | Quito, Pichincha | Con experiencia profesional
+15. Olivia Freire Ledesma | 21 | No binario | Cuenca, Azuay | Sin experiencia profesional formal
+16. Pedro Villacís Herrera | 36 | Masculino | Guayaquil, Guayas | Con experiencia profesional
+17. Renata Solís Andrade | 25 | Femenino | Loja, Loja | Con experiencia profesional
+18. Sebastián Paz Jaramillo | 32 | Masculino | Ambato, Tungurahua | Con experiencia profesional
+19. Tamara Yépez Cárdenas | 22 | Femenino | Quito, Pichincha | Sin experiencia profesional formal
+20. Ulises Guerrero Ponce | 27 | Masculino | Quito, Pichincha | Con experiencia profesional
+21. Valentina Navas Moreira | 28 | Femenino | Manta, Manabí | Con experiencia profesional
+22. William Arias Cárdenas | 24 | Masculino | Guayaquil, Guayas | Con experiencia profesional
+23. Ximena Cárdenas Ordóñez | 39 | Femenino | Loja, Loja | Con experiencia profesional
+24. Yago Hidalgo Rosero | 26 | Masculino | Santo Domingo, Santo Domingo de los Tsáchilas | Con experiencia profesional
+25. Zoe Macías Torres | 23 | No binario | Quito, Pichincha | Sin experiencia profesional formal

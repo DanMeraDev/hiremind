@@ -42,6 +42,31 @@ export interface ResultadoCriterio {
 
 type ItemExtraido = { cita: string; verificado?: boolean } & Record<string, unknown>;
 
+export type TipoPregunta = "tecnica" | "experiencia" | "situacional" | "verificacion";
+export interface Pregunta {
+  pregunta: string;
+  criterio: string;
+  tipo: TipoPregunta;
+  proposito: string;
+}
+
+export interface SeleccionCandidato {
+  correo: string;
+  correo_enviado: string | null;
+  creada: string;
+  preguntas: Pregunta[];
+  origen_preguntas: "llm" | "plantilla" | "";
+}
+
+export interface BorradorSeleccion {
+  correo_sugerido: string;
+  asunto: string;
+  texto: string;
+  correo_configurado: boolean;
+  remitente: string;
+  redirigir_a: string;
+}
+
 export interface Candidato {
   id: number;
   eval_id: number;
@@ -55,6 +80,7 @@ export interface Candidato {
   intentos: number;
   corregida: number;
   datos_quitados: string[];
+  seleccion: SeleccionCandidato | null;
   criterios: ResultadoCriterio[];
   extraccion: Record<"formacion" | "experiencia" | "habilidades" | "idiomas" | "proyectos", ItemExtraido[]> & {
     nombre_candidato: string;
@@ -161,6 +187,12 @@ export const api = {
   ranking: (id: number) => pedir<Ranking>(`/vacantes/${id}/ranking`),
   corregir: (evalId: number, criterioId: string, estado: Estado) =>
     pedir<{ puntaje: number }>(`/evaluaciones/${evalId}/criterios/${criterioId}`, json("PATCH", { estado })),
+  borradorSeleccion: (candidatoId: number) => pedir<BorradorSeleccion>(`/candidatos/${candidatoId}/seleccion/borrador`),
+  seleccionar: (candidatoId: number, datos: { correo: string; mensaje: string; enviar_correo: boolean }) =>
+    pedir<SeleccionCandidato>(`/candidatos/${candidatoId}/seleccionar`, json("POST", datos)),
+  regenerarPreguntas: (candidatoId: number) =>
+    pedir<Pick<SeleccionCandidato, "preguntas" | "origen_preguntas">>(`/candidatos/${candidatoId}/preguntas`, { method: "POST" }),
+  quitarSeleccion: (candidatoId: number) => pedir<void>(`/candidatos/${candidatoId}/seleccion`, { method: "DELETE" }),
   urlCSV: (id: number) => `/api/vacantes/${id}/ranking.csv`,
   urlPDF: (candidatoId: number) => `/api/candidatos/${candidatoId}/pdf`,
 };

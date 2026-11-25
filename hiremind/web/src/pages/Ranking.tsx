@@ -7,6 +7,7 @@ import { useMemo, useRef, useState, type CSSProperties } from "react";
 import { Link, useParams } from "react-router";
 import { api, NOMBRE_ESTADO, type Candidato, type Estado, type ResultadoCriterio } from "../api";
 import { PestanasVacante } from "../components/Layout";
+import SeleccionCandidato from "./Seleccion";
 import { AnilloPuntaje, BarraPuntaje, Cargando, Insignia, InsigniaEstado, PuntoEstado, Vacio, fmt } from "../components/ui";
 
 const ESTADOS: Estado[] = ["cumple", "parcial", "no_identificado"];
@@ -118,6 +119,7 @@ function Detalle({ c, vid }: { c: Candidato; vid: number }) {
               <Insignia tono="neutro">#{c.posicion}</Insignia>
               {c.top && <Insignia tono="marca"><Star className="size-3 fill-current" /> Top para revisión</Insignia>}
               {!!c.corregida && <Insignia tono="marca"><Pencil className="size-3" /> Corregido</Insignia>}
+              {c.seleccion && <Insignia tono="verde"><UserCheck className="size-3" /> Seleccionado</Insignia>}
             </div>
             <h2 className="mt-1.5 truncate font-titulo text-4xl">{c.nombre}</h2>
             <a href={api.urlPDF(c.id)} target="_blank" rel="noreferrer" className="mt-0.5 inline-flex items-center gap-1 text-xs font-semibold text-zinc-500 underline decoration-2 underline-offset-2 hover:text-marca-700 dark:hover:text-marca-300">
@@ -136,6 +138,8 @@ function Detalle({ c, vid }: { c: Candidato; vid: number }) {
           </p>
         )}
       </section>
+
+      <SeleccionCandidato c={c} vid={vid} />
 
       <section className="tarjeta a-sube p-5" style={{ "--i": 2 } as CSSProperties}>
         <h3 className="mb-3 font-titulo text-2xl">Evaluación por criterio</h3>
@@ -213,6 +217,7 @@ export default function Ranking() {
                           <span className="truncate text-sm font-bold">{c.nombre}</span>
                           {c.top && <Star className="size-3.5 shrink-0 fill-ambar text-noche dark:text-ambar" aria-label="Top" />}
                           {!!c.corregida && <Pencil className="size-3 shrink-0 text-marca-500" aria-label="Corregido" />}
+                          {c.seleccion && <UserCheck className="size-3.5 shrink-0 text-emerald-600 dark:text-menta" aria-label="Seleccionado" />}
                         </div>
                         <div className="mt-1.5 flex gap-1">
                           {c.criterios.map((r, j) => <PuntoEstado key={r.criterio_id} estado={r.estado} titulo={r.nombre} i={i + j} />)}

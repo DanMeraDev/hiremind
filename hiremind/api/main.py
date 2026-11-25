@@ -15,8 +15,9 @@ from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ValidationError
 
-from agente import config, db, llm
+from agente import config, correo, db, entrevista, llm
 from agente.demo import VACANTES_DEMO
+from agente.ingesta import leer_pdf
 from agente.modelos import Estado, Vacante
 from agente.pipeline import evaluar_cv
 
@@ -186,6 +187,87 @@ def corregir(eval_id: int, criterio_id: str, body: Correccion):
         if db.evaluacion_de(con, eval_id) is None:
             raise HTTPException(404, "La evaluación no existe")
         return {"puntaje": db.corregir_criterio(con, eval_id, criterio_id, body.estado)}
+
+
+# ---------------------------------------------------------------- selección del candidato
+class Seleccion(BaseModel):
+    correo: str
+    mensaje: str = ""
+    enviar_correo: bool = True
+
+
+def _evaluado_o_404(con, candidato_id: int) -> tuple[Vacante, dict]:
+    c = db.candidato(con, candidato_id)
+    if c is None:
+        raise HTTPException(404, "El candidato no existe")
+    vac = _vacante_o_404(con, c["vacante_id"])
+    fila = next((f for f in db.ranking(con, vac.id) if f["id"] == candidato_id), None)
+    if fila is None:
+        raise HTTPException(409, "Solo se puede seleccionar a un candidato evaluado")
+    return vac, fila
+
+
+def _correo_en_cv(vacante_id: int, archivo: str) -> str:
+    ruta = _ruta_pdf(vacante_id, archivo)
+    return correo.buscar_correo(leer_pdf(ruta.read_bytes()).texto) if ruta.exists() else ""
+
+
+def _componer(vac: Vacante, fila: dict, mensaje: str = ""):
+    fortalezas = [c.nombre for c in fila["criterios"] if c.estado == "cumple"]
+    return correo.componer(vac, fila["nombre"], fortalezas, mensaje)
+
+
+@app.get("/api/candidatos/{candidato_id}/seleccion/borrador")
+def borrador_seleccion(candidato_id: int):
+    """Correo sugerido (si aparece en el CV) y vista previa del mensaje, antes de confirmar."""
+    with db.conectar() as con:
+        vac, fila = _evaluado_o_404(con, candidato_id)
+    asunto, texto, _ = _componer(vac, fila)
+    return {"correo_sugerido": _correo_en_cv(vac.id, fila["archivo"]), "asunto": asunto, "texto": texto,
+            "correo_configurado": correo.configurado(), "remitente": config.MAIL_FROM,
+            "redirigir_a": config.MAIL_REDIRIGIR_A}
+
+
+@app.post("/api/candidatos/{candidato_id}/seleccionar")
+def seleccionar(candidato_id: int, body: Seleccion):
+    """La persona elige al candidato: se le envía el correo y se generan las preguntas de entrevista."""
+    destino = body.correo.strip()
+    if not correo.correo_valido(destino):
+        raise HTTPException(422, "Escriba un correo válido para el candidato")
+    with db.conectar() as con:
+        vac, fila = _evaluado_o_404(con, candidato_id)
+    enviado = None
+    if body.enviar_correo:
+        try:
+            correo.enviar(destino, *_componer(vac, fila, body.mensaje))
+        except correo.ErrorCorreo as e:
+            raise HTTPException(502, str(e)) from e
+        enviado = db._ahora()
+    preguntas, origen = entrevista.sugerir(vac, fila["criterios"], fila["extraccion"])
+    with db.conectar() as con:
+        db.guardar_seleccion(con, candidato_id, destino, enviado, [p.model_dump() for p in preguntas], origen)
+    return {"correo": destino, "correo_enviado": enviado, "origen_preguntas": origen,
+            "preguntas": [p.model_dump() for p in preguntas]}
+
+
+@app.post("/api/candidatos/{candidato_id}/preguntas")
+def regenerar_preguntas(candidato_id: int):
+    with db.conectar() as con:
+        vac, fila = _evaluado_o_404(con, candidato_id)
+        if fila["seleccion"] is None:
+            raise HTTPException(409, "Primero seleccione al candidato")
+    preguntas, origen = entrevista.sugerir(vac, fila["criterios"], fila["extraccion"])
+    with db.conectar() as con:
+        db.guardar_seleccion(con, candidato_id, fila["seleccion"]["correo"], None,
+                             [p.model_dump() for p in preguntas], origen)
+    return {"origen_preguntas": origen, "preguntas": [p.model_dump() for p in preguntas]}
+
+
+@app.delete("/api/candidatos/{candidato_id}/seleccion", status_code=204)
+def quitar_seleccion(candidato_id: int):
+    with db.conectar() as con:
+        if not db.quitar_seleccion(con, candidato_id):
+            raise HTTPException(404, "El candidato no estaba seleccionado")
 
 
 # ---------------------------------------------------------------- interfaz compilada

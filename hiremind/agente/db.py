@@ -50,6 +50,15 @@ CREATE TABLE IF NOT EXISTS evidencias (
     citas_json TEXT NOT NULL,
     corregido INTEGER NOT NULL DEFAULT 0
 );
+CREATE TABLE IF NOT EXISTS selecciones (
+    id INTEGER PRIMARY KEY,
+    candidato_id INTEGER NOT NULL UNIQUE REFERENCES candidatos(id) ON DELETE CASCADE,
+    correo TEXT NOT NULL,
+    correo_enviado TEXT,
+    preguntas_json TEXT NOT NULL DEFAULT '[]',
+    origen_preguntas TEXT NOT NULL DEFAULT '',
+    creada TEXT NOT NULL
+);
 """
 
 
@@ -170,14 +179,21 @@ def ranking(con, vacante_id: int) -> list[dict]:
     """Candidatos evaluados ordenados por puntaje (todos; no se descarta a nadie)."""
     filas = con.execute(
         "SELECT c.id, c.archivo, c.nombre, c.datos_quitados, e.id AS eval_id, e.puntaje, "
-        "e.justificacion, e.segundos, e.intentos, e.corregida, e.extraccion_json "
+        "e.justificacion, e.segundos, e.intentos, e.corregida, e.extraccion_json, "
+        "s.correo AS sel_correo, s.correo_enviado AS sel_enviado, s.preguntas_json AS sel_preguntas, "
+        "s.origen_preguntas AS sel_origen, s.creada AS sel_creada "
         "FROM candidatos c JOIN evaluaciones e ON e.candidato_id = c.id "
+        "LEFT JOIN selecciones s ON s.candidato_id = c.id "
         "WHERE c.vacante_id = ? ORDER BY e.puntaje DESC, c.nombre", (vacante_id,)).fetchall()
     out = []
     for f in filas:
         d = dict(f)
         d["datos_quitados"] = json.loads(d["datos_quitados"])
         d["extraccion"] = json.loads(d.pop("extraccion_json"))
+        sel = {k[4:]: d.pop(k) for k in list(d) if k.startswith("sel_")}
+        d["seleccion"] = None if sel["creada"] is None else {
+            "correo": sel["correo"], "correo_enviado": sel["enviado"], "creada": sel["creada"],
+            "preguntas": json.loads(sel["preguntas"]), "origen_preguntas": sel["origen"]}
         d["criterios"] = [
             ResultadoCriterio(criterio_id=r["criterio_id"], nombre=r["nombre"], peso=r["peso"],
                               estado=r["estado"], detalle=r["detalle"],
@@ -214,3 +230,18 @@ def corregir_criterio(con, eval_id: int, criterio_id: str, nuevo_estado: str) ->
     nuevo = round(sum(f["peso"] * VALOR_ESTADO[f["estado"]] for f in filas), 1)
     con.execute("UPDATE evaluaciones SET puntaje=?, corregida=1 WHERE id=?", (nuevo, eval_id))
     return nuevo
+
+
+# ---------------------------------------------------------------- selección del candidato
+def guardar_seleccion(con, candidato_id: int, correo: str, enviado: str | None,
+                      preguntas: list[dict], origen: str) -> None:
+    con.execute(
+        "INSERT INTO selecciones (candidato_id, correo, correo_enviado, preguntas_json, origen_preguntas, creada) "
+        "VALUES (?,?,?,?,?,?) ON CONFLICT(candidato_id) DO UPDATE SET correo=excluded.correo, "
+        "correo_enviado=COALESCE(excluded.correo_enviado, selecciones.correo_enviado), "
+        "preguntas_json=excluded.preguntas_json, origen_preguntas=excluded.origen_preguntas",
+        (candidato_id, correo, enviado, json.dumps(preguntas, ensure_ascii=False), origen, _ahora()))
+
+
+def quitar_seleccion(con, candidato_id: int) -> bool:
+    return con.execute("DELETE FROM selecciones WHERE candidato_id=?", (candidato_id,)).rowcount > 0

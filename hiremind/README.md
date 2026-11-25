@@ -32,6 +32,7 @@ Los diagramas de arquitectura, razonamiento y flujo de trabajo están en `../dia
 - **`/app/vacantes/:id`** · 1 · Criterios: tipo, peso, palabras clave; avisa si los pesos no suman 100 % y rechaza criterios discriminatorios.
 - **`/app/vacantes/:id/cvs`** · 2 · Hojas de vida: arrastrar varios PDF, avance y tiempo por CV.
 - **`/app/vacantes/:id/ranking`** · 3 · Ranking: top 5, justificación, citas verificadas por criterio, corrección humana que recalcula, datos extraídos, PDF original, revisión manual y exportación CSV.
+  Al **seleccionar** a un candidato se le envía un correo con el puesto (con vista previa y confirmación) y aparecen **preguntas sugeridas para la entrevista**, generadas con los criterios y la evidencia del CV (nunca con datos personales).
 
 Tema claro y oscuro; se adapta a celular.
 
@@ -118,6 +119,10 @@ Vite reenvía `/api` al puerto 8000.
 | GET | `/api/vacantes/{id}/ranking.csv` | Exportar |
 | PATCH | `/api/evaluaciones/{eval_id}/criterios/{criterio_id}` | Corrección humana (`{"estado": "cumple"}`) |
 | GET | `/api/candidatos/{id}/pdf` | PDF original |
+| GET | `/api/candidatos/{id}/seleccion/borrador` | Correo sugerido (si está en el CV) y vista previa del mensaje |
+| POST | `/api/candidatos/{id}/seleccionar` | Elegir: envía el correo y genera preguntas (`{"correo": "...", "mensaje": "", "enviar_correo": true}`) |
+| POST | `/api/candidatos/{id}/preguntas` | Generar otras preguntas |
+| DELETE | `/api/candidatos/{id}/seleccion` | Quitar la selección |
 
 Documentación interactiva en `http://localhost:8000/docs`.
 
@@ -132,6 +137,25 @@ Documentación interactiva en `http://localhost:8000/docs`.
 
 Resultado medido (Qwen3-4B Q4_K_M, GPU de 8 GB): 9,4 s por CV en promedio, P95 11,4 s; el escaneado va a revisión manual y el CV trampa obtiene 10/100.
 
+### CV de prueba del grupo (`datos/seeds/`)
+
+95 hojas de vida que aportó cada integrante, con su vacante en `agente/seeds.py`:
+
+| Carpeta | CV | Vacante | Casos útiles |
+|---|---|---|---|
+| `farmareds` | 25 | Auxiliar de farmacia (aviso real en `vacante.pdf`) | El aviso pide "edad entre 20 y 40 años": HireMind no acepta ese criterio |
+| `cocinero` | 20 | Cocinero/a | `CV_19_Wilson_Calapi.pdf` es escaneado → revisión manual |
+| `game_designer` | 25 | Game designer junior | Perfiles autodidactas, estudiantes y en transición (`LEEME.txt`) |
+| `tecnico_redes` | 25 | Técnico/a de redes | Todos traen correo |
+
+```bash
+.venv/bin/python scripts/cargar_seeds.py                # crea las 4 vacantes y evalúa todos los CV (LM Studio encendido)
+.venv/bin/python scripts/cargar_seeds.py cocinero -n 5  # una vacante, 5 CV
+.venv/bin/python scripts/cargar_seeds.py --sin-evaluar  # solo las vacantes; los PDF se suben desde la app
+```
+
+Algunos CV traen correos reales: para probar la selección use el modo prueba (`MAIL_REDIRIGIR_A` en `.env`).
+
 ## Pruebas
 
 ```bash
@@ -144,3 +168,8 @@ cd web && npm run typecheck             # tipos de la interfaz
 
 Variables de entorno (ver `agente/config.py`): `HIREMIND_LLM_URL`, `HIREMIND_MODELO`, `HIREMIND_DB`, `HIREMIND_ARCHIVOS`.
 Para usar otro modelo (por ejemplo uno de 8B) basta con cargarlo en LM Studio y cambiar `HIREMIND_MODELO`.
+
+**Correo al candidato seleccionado:** copie `.env.example` como `.env` y complete los datos SMTP
+(con Gmail, una *contraseña de aplicación*). `.env` está en `.gitignore`. Sin él, la selección se guarda pero no se envía correo.
+Con `MAIL_REDIRIGIR_A=su_correo` todos los correos llegan a esa dirección (modo prueba) y el asunto indica a quién iban.
+Si LM Studio está apagado, las preguntas de entrevista se arman con una plantilla por criterio.
