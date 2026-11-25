@@ -247,6 +247,35 @@ for i, (n, t, d, col) in enumerate(pasos_sel):
 c += f'<div style="position:absolute;left:1350px;top:950px;width:480px;color:#fff;font-size:20px;font-weight:600;opacity:.8">Sin datos personales · con LM Studio apagado usa una plantilla por criterio</div>'
 slide("13b_seleccion", "noche", "Del ranking a la entrevista", "Nuevo: la decisión humana cierra el ciclo", c)
 
+B = json.loads((AQUI.parent.parent / "hiremind" / "evaluacion" / "benchmark.json").read_text())
+u1, u3 = B["corridas"][0], B["corridas"][1]
+et = u1["etapas_promedio_s"]
+ext, jus = et["llm_extraccion"], et["llm_justificacion"]
+resto = sum(v for k, v in et.items() if not k.startswith("llm"))
+tot = ext + jus + resto
+c = box(110, 290, 860, 330, '<div style="padding:26px 32px"><div class="lbl">Dónde se va el tiempo de 1 CV · 1 usuario</div>'
+    f'<div style="display:flex;height:84px;margin-top:22px;border:4px solid {NOCHE}">'
+    f'<div style="width:{ext / tot * 100:.1f}%;background:{CORAL};display:flex;align-items:center;padding-left:16px" class="big"><span style="font-size:46px">{dec(ext, 1)} s</span></div>'
+    f'<div style="width:{jus / tot * 100:.1f}%;background:{AMBAR};border-left:4px solid {NOCHE};display:flex;align-items:center;justify-content:center" class="big"><span style="font-size:38px">{dec(jus, 1)}</span></div></div>'
+    f'<div style="display:flex;justify-content:space-between;font-size:21px;font-weight:700;margin-top:12px"><span>LLM lee el CV a JSON</span><span>LLM redacta</span></div>'
+    + f'<div style="font-size:24px;font-weight:600;margin-top:18px">Leer PDF, quitar datos, verificar citas, puntuar y guardar: <b>{resto * 1000:.0f} ms</b> → el modelo es <b>más del 99,9 %</b> del tiempo</div></div>')
+filas = [("CV por minuto", dec(u1["cv_por_minuto"], 1), dec(u3["cv_por_minuto"], 1)),
+         ("Tiempo por CV (promedio)", dec(u1["latencia_s"]["promedio"], 1) + " s", dec(u3["latencia_s"]["promedio"], 1) + " s"),
+         ("Tiempo por CV (P95)", dec(u1["latencia_s"]["p95"], 1) + " s", dec(u3["latencia_s"]["p95"], 1) + " s"),
+         ("Tokens por segundo", f'{u1["tokens_s_total"]:.0f}', f'{u3["tokens_s_total"]:.0f}'),
+         ("RAM pico del equipo", dec(u1["recursos"]["ram_pico_gb"], 1) + " GB", dec(u3["recursos"]["ram_pico_gb"], 1) + " GB + " + dec(u3["recursos"]["swap_pico_gb"], 1) + " swap"),
+         ("Errores", f'0 / {u1["cv"]}', f'0 / {u3["cv"]}')]
+c += box(1030, 290, 780, 650, '<div style="padding:26px 32px"><div style="display:flex;font-size:18px;font-weight:800;letter-spacing:.08em;text-transform:uppercase"><span style="flex:1">20 CV reales</span><span style="width:170px;text-align:right">1 usuario</span><span style="width:250px;text-align:right">3 a la vez</span></div>' + "".join(
+    f'<div style="display:flex;align-items:baseline;border-top:3px solid {NOCHE};padding:14px 0;margin-top:{6 if i == 0 else 0}px"><span style="flex:1;font-size:23px;font-weight:700">{n}</span><span class="big" style="width:170px;text-align:right;font-size:46px">{a}</span><span class="big" style="width:250px;text-align:right;font-size:{46 if len(b) < 10 else 32}px;color:{AZUL if i < 4 else NOCHE}">{b}</span></div>'
+    for i, (n, a, b) in enumerate(filas)) + "</div>")
+c += box(110, 660, 410, 280, f'<div style="height:100%;padding:24px 28px;background:{MENTA}"><div class="lbl">Por CV</div><div class="big" style="font-size:78px;line-height:1.05">{u1["tokens_por_cv"]["entrada"]:,} + {u1["tokens_por_cv"]["salida"]:,}</div>'.replace(",", ".") + f'<div style="font-size:21px;font-weight:700">tokens de entrada + salida · {u1["llamadas_llm_por_cv"]:.0f} llamadas</div><div style="font-size:21px;font-weight:700;margin-top:10px">Preguntas de entrevista: {dec(B["preguntas_entrevista"]["promedio_s"], 1)} s</div></div>')
+c += box(560, 660, 410, 280, '<div style="padding:24px 28px"><div class="lbl">Equipo mínimo</div>'
+    '<div style="font-size:24px;font-weight:800;margin-top:12px">1 usuario: 16 GB RAM</div>'
+    '<div style="font-size:24px;font-weight:800;margin-top:6px">3 usuarios: 24 GB RAM</div>'
+    '<div style="font-size:20px;font-weight:600;margin-top:12px;line-height:1.3">Servidor en la nube de 16 GB: $87–128 al mes · en el equipo de la PYME: $0</div></div>')
+slide("13c_computo", "blanco", "Costo computacional", "Medido en una PC de oficina · Qwen3-4B en LM Studio · mismos 20 CV con 1 y 3 usuarios", c,
+      "PC: Ryzen 7 5700G, gráficos integrados, 16 GB. 20 CV de las 4 vacantes del grupo (scripts/benchmark.py). Nube: Hetzner CCX23, 16 GB, jun. 2026.")
+
 # =====================================================================================
 # 14 · Limitaciones y consideraciones futuras
 lim = [("Solo PDF con texto", "los escaneados van a revisión manual (no hay OCR)"),
@@ -315,35 +344,60 @@ c += box(110, 740, 1700, 190, f'<div style="display:flex;align-items:center;heig
 slide("18_tarifas", "blanco", "Estructura tarifaria", "Precios en USD", c)
 
 # =====================================================================================
-# 19 · Cálculo del precio (costo + punto de equilibrio)
-P = {
-    "dev_horas": 480, "dev_tarifa": 6, "amort_anios": 3,
-    "setup_horas": 3, "tarifa_tecnico": 10, "comision": 0.06, "garantia_horas": 1,
-    "fijos": [("Marketing digital", 1200), ("Landing y dominio", 120), ("Contabilidad (RIMPE)", 360), ("Equipo de pruebas (depreciación)", 300)],
-}
-inv = P["dev_horas"] * P["dev_tarifa"]
-var = P["setup_horas"] * P["tarifa_tecnico"] + P["comision"] * 374 + P["garantia_horas"] * P["tarifa_tecnico"]
-contrib = 374 - var
-fijos = sum(v for _, v in P["fijos"])
-amort = inv / P["amort_anios"]
-equilibrio = (fijos + amort) / contrib
-filas = [("Precio de entrada (licencia + setup)", 374, NOCHE),
-         (f"Setup: {P['setup_horas']} h × ${P['tarifa_tecnico']}/h", -P["setup_horas"] * P["tarifa_tecnico"], CORAL),
-         (f"Comisión de cobro {int(P['comision'] * 100)} %", -P["comision"] * 374, CORAL),
-         (f"Garantía: {P['garantia_horas']} h de soporte", -P["garantia_horas"] * P["tarifa_tecnico"], CORAL),
-         ("Margen de contribución por cliente", contrib, AZUL)]
-c = '<div style="position:absolute;left:110px;top:290px;width:900px">'
-for n, v, col in filas:
-    w = int(abs(v) / 374 * 520)
-    c += f'<div style="display:flex;align-items:center;height:86px;border-bottom:3px solid {NOCHE}"><div style="width:380px;font-size:23px;font-weight:700">{n}</div><div style="width:{w}px;height:46px;background:{col};border:3px solid {NOCHE}"></div><div class="big" style="font-size:52px;margin-left:16px">{"−" if v < 0 else ""}${abs(v):.0f}</div></div>'
-c += "</div>"
-c += box(1080, 290, 730, 380, '<div style="padding:30px 34px"><div class="lbl">Costos fijos al año</div>' + "".join(
-    f'<div style="display:flex;justify-content:space-between;font-size:24px;font-weight:600;margin-top:12px"><span>{n}</span><b>${v:,}</b></div>' for n, v in P["fijos"])
-    + f'<div style="display:flex;justify-content:space-between;font-size:24px;font-weight:600;margin-top:12px"><span>Desarrollo {P["dev_horas"]} h × ${P["dev_tarifa"]} ÷ {P["amort_anios"]} años</span><b>${amort:,.0f}</b></div>'
-    + f'<div style="display:flex;justify-content:space-between;font-size:28px;font-weight:800;margin-top:18px;border-top:4px solid {NOCHE};padding-top:12px"><span>Total a cubrir</span><span>${fijos + amort:,.0f}</span></div></div>')
-c += box(1080, 720, 730, 220, f'<div style="display:flex;align-items:center;height:100%;padding:0 34px;gap:28px;background:{MENTA}"><div class="big" style="font-size:150px">{equilibrio:.0f}→{int(equilibrio) + 1}</div><div style="font-size:26px;font-weight:700;line-height:1.3">clientes al año para el punto de equilibrio<br><span style="font-weight:500;font-size:21px">${fijos + amort:,.0f} ÷ ${contrib:.0f} por cliente</span></div></div>')
-slide("19_calculo", "menta", "Cálculo del precio", "Costo por cliente, margen y punto de equilibrio (año 1)", c,
-      "Supuestos del equipo: tarifa de practicante $6/h para el desarrollo; técnico $10/h; comisión de tarjeta diferida 6 %.")
+# 19 · Costos con sueldos y punto de equilibrio
+import finanzas as F
+contrib = F.PRECIO * (1 - F.COMISION)
+fijos = [(f"Sueldos: {F.EQUIPO} socios a medio tiempo", F.SUELDOS)] + list(F.OTROS.items())
+c = box(110, 290, 860, 640, '<div style="padding:30px 36px"><div class="lbl">Costos fijos al mes</div>' + "".join(
+    f'<div style="display:flex;justify-content:space-between;font-size:28px;font-weight:{800 if i == 0 else 600};margin-top:18px"><span>{n}</span><b>${v:,.0f}</b></div>'
+    for i, (n, v) in enumerate(fijos))
+    + f'<div style="font-size:20px;font-weight:500;margin-top:6px">sueldo básico 2026 ${F.SBU} + IESS 11,15 % + décimos = ${F.COSTO_PERSONA:.0f} por persona a tiempo completo</div>'
+    + f'<div style="display:flex;justify-content:space-between;font-size:34px;font-weight:800;margin-top:26px;border-top:4px solid {NOCHE};padding-top:14px"><span>Total al mes</span><span>${F.FIJO:,.0f}</span></div>'
+    + f'<div style="display:flex;justify-content:space-between;font-size:26px;font-weight:700;margin-top:8px"><span>Total al año</span><span>${F.FIJO * 12:,.0f}</span></div></div>')
+c += box(1030, 290, 780, 300, f'<div style="padding:28px 34px"><div class="lbl">Por cada cliente nuevo</div>'
+    f'<div style="display:flex;justify-content:space-between;font-size:28px;font-weight:600;margin-top:16px"><span>Licencia + setup</span><b>${F.PRECIO}</b></div>'
+    f'<div style="display:flex;justify-content:space-between;font-size:28px;font-weight:600;margin-top:12px"><span>Comisión de cobro {F.COMISION * 100:.0f} %</span><b>−${F.PRECIO * F.COMISION:.0f}</b></div>'
+    f'<div style="display:flex;justify-content:space-between;font-size:34px;font-weight:800;margin-top:18px;border-top:4px solid {NOCHE};padding-top:12px"><span>Margen</span><span>${contrib:.0f}</span></div></div>')
+c += box(1030, 630, 780, 300, f'<div style="height:100%;padding:26px 34px;background:{MENTA}"><div class="lbl">Punto de equilibrio</div>'
+    f'<div class="big" style="font-size:130px;line-height:1">{F.EQUILIBRIO_MES:.1f}'.replace(".", ",") + f'<span style="font-family:Mont;font-size:30px;font-weight:800"> clientes / mes</span></div>'
+    f'<div style="font-size:24px;font-weight:700;margin-top:10px">${F.FIJO:,.0f} ÷ ${contrib:.0f} → {F.EQUILIBRIO_MES * 12:.0f} clientes al año = ' + f'{F.EQUILIBRIO_MES * 12 / F.MERCADO * 100:.2f}'.replace(".", ",") + f' % de {F.MERCADO:,} pequeñas y medianas empresas</div></div>')
+slide("19_calculo", "menta", "Costos y punto de equilibrio", "Incluye los sueldos del equipo · USD", c,
+      "Mercado: 58 400 pequeñas y 9 700 medianas A (INEC, Registro Estadístico de Empresas 2023). SBU 2026: $482. Setup e instalación los hace el equipo (dentro del sueldo).")
+
+# =====================================================================================
+# 19b · Capital inicial y recuperación
+inv = list(F.INVERSION.items()) + [("Capital de trabajo (meses sin ingresos)", F.CAP_TRABAJO)]
+c = box(110, 290, 700, 450, '<div style="padding:28px 32px"><div class="lbl">Capital inicial</div>' + "".join(
+    f'<div style="display:flex;justify-content:space-between;gap:20px;font-size:23px;font-weight:600;margin-top:16px"><span>{n}</span><b>${v:,.0f}</b></div>' for n, v in inv)
+    + f'<div style="display:flex;justify-content:space-between;font-size:34px;font-weight:800;margin-top:22px;border-top:4px solid {NOCHE};padding-top:12px"><span>Total</span><span>${F.CAPITAL:,.0f}</span></div>'
+    + f'<div style="font-size:22px;font-weight:700;margin-top:6px">${F.CAPITAL / F.EQUIPO:,.0f} por socio</div></div>')
+fases = [("Meses 1–3", "$0", f"piloto gratis: {F.PILOTOS_MES * F.MESES_PILOTO} PYMEs", AMBAR),
+         ("Meses 4–6", f"${F.PRECIO_LANZ}", f"lanzamiento: compra el {F.CONVERSION * 100:.0f} % de pilotos", AZUL),
+         ("Mes 7+", f"${F.PRECIO}", "precio normal", MENTA)]
+for i, (m, p, d, col) in enumerate(fases):
+    c += box(110 + i * 238, 780, 222, 170, f'<div style="height:100%;padding:16px 18px;background:{col}"><div style="font-size:19px;font-weight:800">{m}</div><div class="big" style="font-size:54px">{p}</div><div style="font-size:17px;font-weight:600;line-height:1.2">{d}</div></div>')
+# gráfico de caja acumulada
+X0, Y0, W, H = 880, 300, 930, 560
+mn, mx = min(x["caja"] for x in F.MESES), max(x["caja"] for x in F.MESES)
+esc = H / (mx - mn)
+cero = Y0 + mx * esc
+bw = W / 24
+c += box(X0 - 20, Y0 - 20, W + 40, H + 120, "", "background:#fff")
+for x in F.MESES:
+    v = x["caja"]
+    top, h = (cero - v * esc, v * esc) if v >= 0 else (cero, -v * esc)
+    col = MENTA if v >= 0 else CORAL
+    c += f'<div style="position:absolute;left:{X0 + (x["mes"] - 1) * bw + 4:.0f}px;top:{top:.0f}px;width:{bw - 8:.0f}px;height:{max(h, 3):.0f}px;background:{col};border:2px solid {NOCHE}"></div>'
+    if x["mes"] in (1, 6, 12, 18, 24):
+        c += f'<div style="position:absolute;left:{X0 + (x["mes"] - 1) * bw - 10:.0f}px;top:{Y0 + H + 14}px;width:{bw + 20:.0f}px;text-align:center;font-size:18px;font-weight:700">{x["mes"]}</div>'
+c += f'<div style="position:absolute;left:{X0}px;top:{cero:.0f}px;width:{W}px;height:4px;background:{NOCHE}"></div>'
+c += f'<div style="position:absolute;left:{X0}px;top:{Y0 + H + 44}px;font-size:18px;font-weight:700">mes · caja acumulada (USD)</div>'
+c += f'<div style="position:absolute;left:{X0 + 6}px;top:{cero + 10:.0f}px;font-size:22px;font-weight:800;color:{CORAL}"></div>'
+pb = F.PAYBACK
+c += f'<div style="position:absolute;left:{X0 + (pb - 1) * bw - 150:.0f}px;top:{Y0 + 10}px;width:300px;text-align:center"><div class="big" style="font-size:84px;line-height:1">mes {pb}</div><div style="font-size:21px;font-weight:800">se recupera la inversión</div></div>'
+c += f'<div style="position:absolute;left:{X0 + W - 340}px;top:{cero + 30:.0f}px;font-size:30px;font-weight:800;width:330px;text-align:right">mes 24: +${mx:,.0f}</div>'
+slide("19b_capital", "blanco", "Capital inicial y recuperación", f"Flujo de caja a 24 meses · {F.CLIENTES_A1} clientes el año 1 ({F.CLIENTES_A1 / F.MERCADO * 100:.2f} % del mercado), {F.CLIENTES_A2} el año 2".replace(".", ","), c,
+      f"Supuestos: año 2, {F.RENUEVA * 100:.0f} % de clientes compra Plan Crecimiento ($149). Comisión de cobro 6 %. Sin crédito: aporte de los {F.EQUIPO} socios.")
 
 # =====================================================================================
 # 20 · Valor para el cliente (3 años, 3 contrataciones al año)
@@ -397,7 +451,7 @@ slide("21_riesgos", "blanco", "Análisis de riesgos", "Probabilidad × impacto y
 
 # =====================================================================================
 # 22 · Sostenibilidad y mantenimiento
-sost = [("Económica", "cliente rentable desde el día 0 ($312 de margen); ingresos recurrentes con las expansiones; punto de equilibrio en ~10 clientes al año", MENTA),
+sost = [("Económica", f"margen de ${F.PRECIO * (1 - F.COMISION):.0f} por cliente · equilibrio en {F.EQUILIBRIO_MES:.1f} clientes/mes · inversión recuperada en el mes {F.PAYBACK}".replace(".", ","), MENTA),
         ("Técnica", "código abierto y modular: cambiar de modelo es cambiar un nombre en la configuración; pruebas automáticas de reglas y API", AZUL),
         ("Ambiental y social", "corre en el equipo que ya existe (sin servidores ni GPU dedicada); decisiones sin sesgo por edad, género o nacionalidad", AMBAR)]
 c = ""
@@ -415,7 +469,7 @@ slide("22_sostenibilidad", "coral", "Sostenibilidad y mantenimiento", "", c)
 # =====================================================================================
 # 23 · Conclusiones
 concl = [(pct(RES["exactitud_criterios"]), "de los criterios bien clasificados con un modelo de 4B que corre en una laptop"),
-         (dec(RES["segundos_promedio"], 1) + " s", "por hoja de vida: 60 CV en menos de 10 minutos, sin internet"),
+         (dec(RES["segundos_promedio"], 1) + " s", "por hoja de vida en equipo con GPU; ≈ 17 s en una PC de oficina, sin internet"),
          (RES["equidad_sin_cambio"].replace("/", " de "), "variantes de datos personales sin cambio de puntaje"),
          ("$374", "ticket de entrada: menos que una sola contratación por agencia")]
 c = ""
@@ -441,8 +495,11 @@ slide("24_recomendaciones", "menta", "Recomendaciones", "", c)
 # 25 · Referencias (APA 7)
 refs = [
     "Asamblea Nacional del Ecuador. (2021). <i>Ley Orgánica de Protección de Datos Personales</i>. Registro Oficial Suplemento 459.",
-    "El Diario. (2025). Expertos en talento humano priorizan las habilidades blandas en la contratación.",
+    "El Universo. (2025). Salario básico unificado 2026 será de $482 en Ecuador.",
+    "Hetzner Online. (2026). <i>Price adjustment</i> [Precios de servidores en la nube]. docs.hetzner.com.",
+    "Instituto Nacional de Estadística y Censos [INEC]. (2024). <i>Registro Estadístico de Empresas 2023: principales resultados</i>.",
     "Järvelin, K., &amp; Kekäläinen, J. (2002). Cumulated gain-based evaluation of IR techniques. <i>ACM Transactions on Information Systems, 20</i>(4), 422–446.",
+    "Primicias. (2025). Empatía, trabajo en equipo y liderazgo: habilidades blandas más buscadas por empresas en Ecuador [Estudio de Multitrabajos].",
     "Primicias. (2025, 2026). Cifras de desempleo, informalidad y desempleados sin experiencia en Ecuador.",
     "Qwen Team. (2025). <i>Qwen3 technical report</i>. arXiv:2505.09388.",
     "Raghavan, M., Barocas, S., Kleinberg, J., &amp; Levy, K. (2020). Mitigating bias in algorithmic hiring. <i>Proceedings of FAT* 2020</i>, 469–481.",
@@ -450,7 +507,7 @@ refs = [
     "Documentación oficial: LM Studio, FastAPI, React, PyMuPDF, SQLite y Pydantic (consultada en 2026).",
 ]
 c = '<div style="position:absolute;left:110px;top:280px;width:1700px">' + "".join(
-    f'<div style="font-size:24px;font-weight:500;line-height:1.4;padding:12px 0 12px 46px;text-indent:-46px;border-bottom:2px solid #E3E1F0">{r}</div>' for r in refs) + "</div>"
+    f'<div style="font-size:22px;font-weight:500;line-height:1.35;padding:9px 0 9px 46px;text-indent:-46px;border-bottom:2px solid #E3E1F0">{r}</div>' for r in refs) + "</div>"
 slide("25_referencias", "blanco", "Referencias bibliográficas", "", c)
 
 # =====================================================================================
@@ -459,4 +516,4 @@ c = f'<div style="position:absolute;left:110px;top:430px"><div class="big" style
 slide("26_cierre", "menta", "HireMind", "", c)
 
 print("ok", len(list(OUT.glob("*.html"))), "diapositivas")
-print(f"punto de equilibrio {equilibrio:.1f} · contribución {contrib:.0f} · fijos {fijos} · amort {amort:.0f} · agencia {agencia:.0f}")
+print(f"equilibrio {F.EQUILIBRIO_MES:.1f}/mes · capital {F.CAPITAL:,.0f} · recupera mes {F.PAYBACK} · agencia {agencia:.0f}")

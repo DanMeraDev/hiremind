@@ -1,0 +1,350 @@
+<meta charset="utf-8">
+<title>HireMind · guía de datos</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: columna de lectura con índice de diapositivas; cada diapositiva es una ficha con "qué decir" y una tabla dato → origen */
+:root {
+  --bg: #F6F5FB; --panel: #FFFFFF; --fg: #0A0147; --muted: #4E4A72; --line: #DDDAEE;
+  --menta: #2EE5A7; --coral: #FD696E; --azul: #5383FF; --ambar: #FFB547;
+  --ok-bg: #D7F8EC; --ok-fg: #05603F; --sup-bg: #E3EAFF; --sup-fg: #1D3FA8; --rev-bg: #FFE1E2; --rev-fg: #9B1C22;
+  --display: "Bebas Neue", "Oswald", Impact, sans-serif;
+  --body: "Montserrat", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0B0930; --panel: #151247; --fg: #EEEDF9; --muted: #B4B0D8; --line: #2C2869;
+  --ok-bg: #0F3B2E; --ok-fg: #7FF0C8; --sup-bg: #1C2A66; --sup-fg: #A9BEFF; --rev-bg: #4A1820; --rev-fg: #FFB3B6; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0B0930; --panel: #151247; --fg: #EEEDF9; --muted: #B4B0D8; --line: #2C2869;
+  --ok-bg: #0F3B2E; --ok-fg: #7FF0C8; --sup-bg: #1C2A66; --sup-fg: #A9BEFF; --rev-bg: #4A1820; --rev-fg: #FFB3B6; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 64px }
+.wrap { max-width: 980px; margin: 0 auto }
+header { padding-block: 40px 20px; border-bottom: 3px solid var(--fg) }
+h1 { font-family: var(--display); font-weight: 400; font-size: clamp(44px, 8vw, 76px); line-height: .95; margin: 0; letter-spacing: .5px }
+.lead { max-width: 68ch; color: var(--muted); font-size: 16px; margin: 12px 0 0 }
+h2 { font-family: var(--display); font-weight: 400; font-size: 38px; margin: 44px 0 12px; letter-spacing: .5px; text-wrap: balance }
+h3 { margin: 0; font-size: 19px; font-weight: 800; text-wrap: balance }
+p { max-width: 70ch }
+.leyenda { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 16px; font-size: 13px; color: var(--muted) }
+.pill { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; white-space: nowrap }
+.ok { background: var(--ok-bg); color: var(--ok-fg) } .sup { background: var(--sup-bg); color: var(--sup-fg) } .rev { background: var(--rev-bg); color: var(--rev-fg) }
+.cambios { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 16px }
+.cambio { background: var(--panel); border: 2px solid var(--fg); padding: 14px 16px; min-width: 0 }
+.cambio b { display: block; font-family: var(--display); font-weight: 400; font-size: 30px; line-height: 1 }
+.cambio span { font-size: 13px; color: var(--muted) }
+nav.indice { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px }
+nav.indice a { font-family: var(--mono); font-size: 13px; color: var(--fg); text-decoration: none; border: 2px solid var(--fg); background: var(--panel); padding: 3px 8px }
+nav.indice a.nuevo { background: var(--menta); color: #0A0147 } nav.indice a:hover, nav.indice a:focus-visible { background: var(--azul); color: #fff; outline: none }
+.ficha { background: var(--panel); border: 2px solid var(--line); border-left: 8px solid var(--fg); padding: 18px 20px; margin-top: 14px; scroll-margin-top: 16px }
+.ficha.nueva { border-left-color: var(--menta) } .ficha.cambiada { border-left-color: var(--azul) }
+.cab { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap }
+.num { font-family: var(--display); font-size: 40px; line-height: .9; min-width: 44px }
+.tag { font-size: 12px; font-weight: 700; color: var(--muted) }
+.decir { margin: 10px 0 0; color: var(--fg) }
+.decir::before { content: "Qué decir · "; font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted) }
+.tabla { overflow-x: auto; margin-top: 12px }
+table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 560px }
+th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); padding: 6px 8px; border-bottom: 2px solid var(--fg) }
+td { padding: 8px; border-bottom: 1px solid var(--line); vertical-align: top }
+td.v { font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums }
+td.e { width: 1%; white-space: nowrap }
+td a { color: var(--azul) }
+.nota { font-size: 13px; color: var(--muted); margin-top: 10px }
+.calc { font-family: var(--mono); font-size: 13px; background: var(--bg); border: 1px solid var(--line); padding: 10px 12px; overflow-x: auto; white-space: pre; margin-top: 10px }
+.aviso { background: var(--rev-bg); color: var(--rev-fg); border: 2px solid currentColor; padding: 12px 14px; margin-top: 14px; font-weight: 600 }
+ol.pend { padding-left: 20px } ol.pend li { margin-top: 6px; max-width: 72ch }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth } }
+</style>
+
+<div class="wrap">
+<header>
+  <h1>HireMind · guía de datos de la exposición</h1>
+  <p class="lead">Las 29 diapositivas de la copia de Canva en su orden actual. De cada una: qué decir y de dónde sale cada número. Si alguien del jurado pregunta por una cifra, la respuesta está aquí.</p>
+  <div class="leyenda">
+    <span><span class="pill ok">Medido / verificado</span> sale de una prueba nuestra o de una fuente revisada</span>
+    <span><span class="pill sup">Supuesto</span> decisión del equipo; hay que poder defenderla</span>
+    <span><span class="pill rev">Revisar</span> hay algo que corregir o confirmar</span>
+  </div>
+</header>
+
+<h2>Qué cambió en esta versión</h2>
+<div class="cambios">
+  <div class="cambio"><b>Sueldos</b><span>6 socios a medio tiempo con sueldo básico 2026: $1.848 al mes dentro de los costos fijos</span></div>
+  <div class="cambio"><b>$10.415</b><span>capital inicial nuevo, incluye 3 meses de piloto sin ingresos</span></div>
+  <div class="cambio"><b>Mes 15</b><span>se recupera la inversión según el flujo de caja de 24 meses</span></div>
+  <div class="cambio"><b>Piloto gratis</b><span>meses 1–3 gratis, 4–6 a $274 y desde el mes 7 a $374</span></div>
+  <div class="cambio"><b>Costo de cómputo</b><span>diapositiva nueva con tiempo por etapa, tokens/s y RAM medidos con 1 y 3 usuarios</span></div>
+  <div class="cambio"><b>−2 capturas</b><span>las capturas de la app se muestran en la demo en vivo</span></div>
+</div>
+
+<h2>Índice</h2>
+<nav class="indice" aria-label="Diapositivas">
+  <a href="#d1">01</a><a href="#d2">02</a><a href="#d3">03</a><a href="#d4">04</a><a href="#d5">05</a><a href="#d6">06</a><a href="#d7">07</a><a href="#d8">08</a><a href="#d9">09</a><a href="#d10">10</a><a href="#d11">11</a><a href="#d12">12</a><a href="#d13">13</a><a class="nuevo" href="#d14">14</a><a href="#d15">15</a><a href="#d16">16</a><a href="#d17">17</a><a href="#d18">18</a><a href="#d19">19</a><a class="nuevo" href="#d20">20</a><a class="nuevo" href="#d21">21</a><a href="#d22">22</a><a href="#d23">23</a><a href="#d24">24</a><a href="#d25">25</a><a href="#d26">26</a><a href="#d27">27</a><a href="#d28">28</a><a href="#d29">29</a><a href="#modelo">Modelo financiero</a><a href="#pendientes">Pendientes</a>
+</nav>
+
+<h2>Problema</h2>
+
+<section class="ficha" id="d1"><div class="cab"><span class="num">01</span><h3>HireMind (portada)</h3></div>
+<p class="decir">Nombre del proyecto e integrantes. Una frase: un agente que ordena hojas de vida con evidencia y deja la decisión a la persona.</p></section>
+
+<section class="ficha" id="d2"><div class="cab"><span class="num">02</span><h3>Muchos postulantes y talento difícil de hallar</h3><span class="tag">diapositiva del grupo</span></div>
+<p class="decir">Hay muchas personas buscando trabajo y las empresas dicen que les cuesta encontrar a alguien con las habilidades que necesitan. Esa combinación produce muchas hojas de vida que revisar.</p>
+<div class="tabla"><table><thead><tr><th>Dato</th><th>Valor</th><th>De dónde sale</th><th>Estado</th></tr></thead><tbody>
+<tr><td>Tasa de desempleo</td><td class="v">3,1 %</td><td>INEC, mayo de 2026, publicado por <a href="https://www.primicias.ec/economia/desempleo-ecuador-mayo2026-empleo-adecuado-subempleo-informal-trabajadores-inec-126077/">Primicias</a>. Es el dato de un mes: en marzo y abril la cifra fue distinta.</td><td class="e"><span class="pill ok">Verificado</span></td></tr>
+<tr><td>Ocupados en empleo informal</td><td class="v">52,8 %</td><td>Misma nota de Primicias, mayo de 2026. La diapositiva ahora dice "Ocupados en empleo informal", como la fuente.</td><td class="e"><span class="pill ok">Verificado</span></td></tr>
+<tr><td>Desempleados sin experiencia</td><td class="v">36 %</td><td>INEC, junio de 2025: 36 % de los desempleados busca trabajo por primera vez (<a href="https://www.primicias.ec/economia/desempleo-ecuador-trabajo-jovenes-101128/">Primicias</a>).</td><td class="e"><span class="pill ok">Verificado</span></td></tr>
+<tr><td>Expertos en RR. HH.: las habilidades blandas son las más buscadas y difíciles de encontrar</td><td class="v">54 %</td><td>Estudio de Multitrabajos con 143 especialistas, publicado por <a href="https://www.primicias.ec/economia/empatia-trabajo-equipo-liderazgo-habilidades-blandas-buscadas-empresas-ecuador-101067/">Primicias</a>. Antes la diapositiva citaba "El Diario 2025"; ahora cita a Multitrabajos vía Primicias.</td><td class="e"><span class="pill ok">Verificado</span></td></tr>
+</tbody></table></div></section>
+
+<section class="ficha" id="d3"><div class="cab"><span class="num">03</span><h3>Contratar con poco tiempo y sin criterio sale caro</h3><span class="tag">diapositiva del grupo</span></div>
+<p class="decir">El cliente son las PYMEs sin departamento de RR. HH. Revisan las hojas de vida a mano, sin criterios fijos y con poco tiempo, y eso termina en procesos lentos y malas contrataciones.</p>
+<p class="nota">No tiene cifras. Si preguntan cuántas PYMEs hay: 58.400 pequeñas y 9.700 medianas A en 2023 (diapositiva 20).</p></section>
+
+<h2>Solución técnica</h2>
+
+<section class="ficha" id="d4"><div class="cab"><span class="num">04</span><h3>Arquitectura completa del agente</h3><span class="tag">diapositiva del grupo</span></div>
+<p class="decir">Todo corre en el equipo de la PYME. La interfaz es React, el servidor es FastAPI y el modelo corre en LM Studio. Los datos se guardan en SQLite, y nada sale a internet salvo el correo al candidato.</p></section>
+
+<section class="ficha" id="d5"><div class="cab"><span class="num">05</span><h3>Flujo de razonamiento del agente</h3><span class="tag">diapositiva del grupo</span></div>
+<p class="decir">El modelo solo lee el CV y lo pasa a JSON. Python verifica que cada cita exista en el CV, aplica las reglas y calcula el puntaje. Si el PDF es un escaneo, o si el modelo no devuelve un JSON válido tras dos reintentos, el CV va a revisión manual.</p>
+<div class="tabla"><table><thead><tr><th>Dato</th><th>Valor</th><th>De dónde sale</th><th>Estado</th></tr></thead><tbody>
+<tr><td>Reintentos si el JSON es inválido</td><td class="v">2</td><td><code>MAX_REINTENTOS = 2</code> en <code>agente/config.py</code></td><td class="e"><span class="pill ok">Código</span></td></tr>
+<tr><td>Texto mínimo para considerar el PDF legible</td><td class="v">200 caracteres</td><td><code>MIN_CARACTERES</code> en <code>agente/config.py</code></td><td class="e"><span class="pill ok">Código</span></td></tr>
+<tr><td>Texto máximo que recibe el modelo</td><td class="v">12.000 caracteres</td><td><code>MAX_CHARS_CV</code> en <code>agente/config.py</code></td><td class="e"><span class="pill ok">Código</span></td></tr>
+</tbody></table></div></section>
+
+<section class="ficha cambiada" id="d6"><div class="cab"><span class="num">06</span><h3>Criterios de selección del LLM (Qwen 4B)</h3><span class="tag">diapositiva del grupo · texto de Streamlit tapado</span></div>
+<p class="decir">Elegimos Qwen3-4B porque entiende bien español, devuelve JSON estricto y cabe en un computador de oficina de 16 GB. Si hace falta más capacidad, se puede subir a 7B u 8B en el mismo equipo o a Gemini Flash en la nube.</p>
+<div class="tabla"><table><thead><tr><th>Dato</th><th>Valor</th><th>De dónde sale</th><th>Estado</th></tr></thead><tbody>
+<tr><td>Tamaño del modelo</td><td class="v">1,8–2,5 GB</td><td><code>lms ls</code>: la versión Q3_K_L pesa 2,24 GB y la Q4_K_M, 2,50 GB</td><td class="e"><span class="pill ok">Medido</span></td></tr>
+<tr><td>Ventana de contexto en memoria</td><td class="v">0,8–1,5 GB</td><td>Estimación del grupo. LM Studio estima 3,86 GiB para el modelo con 24.576 tokens de contexto, repartidos entre 3 usuarios.</td><td class="e"><span class="pill sup">Estimado</span></td></tr>
+<tr><td>Equipo de referencia</td><td class="v">16 GB RAM</td><td>Laptop de oficina típica. En la prueba con 4 hilos el modelo llegó a unos 8 GB contando RAM y swap.</td><td class="e"><span class="pill sup">Supuesto</span></td></tr>
+</tbody></table></div></section>
+
+<section class="ficha" id="d7"><div class="cab"><span class="num">07</span><h3>Herramientas y su rol</h3></div>
+<p class="decir">Cuatro capas y todo es de código abierto: interfaz, servicio, agente, y modelo con datos. Cada herramienta tiene un solo trabajo.</p>
+<p class="nota">El modelo pesa "2,5 GB", según <code>lms ls</code> para Q4_K_M.</p></section>
+
+<section class="ficha cambiada" id="d8"><div class="cab"><span class="num">08</span><h3>Flujo de trabajo y evaluación responsable</h3></div>
+<p class="decir">El usuario hace ocho pasos: iniciar LM Studio, crear la vacante con sus pesos, subir los CV, revisar el ranking y elegir a quién entrevistar. El agente hace el resto. Al elegir un candidato, el agente le envía un correo y prepara preguntas para la entrevista.</p></section>
+
+<section class="ficha" id="d9"><div class="cab"><span class="num">09</span><h3>Métricas y protocolo de evaluación</h3><span class="tag">diapositiva del grupo</span></div>
+<p class="decir">Antes de probar fijamos las metas. Así los resultados se comparan contra algo definido de antemano, no contra lo que salió.</p>
+<div class="tabla"><table><thead><tr><th>Meta</th><th>Valor</th><th>Por qué</th><th>Estado</th></tr></thead><tbody>
+<tr><td>Tasa de éxito</td><td class="v">≥ 95 %</td><td>Casi todos los CV legibles deben evaluarse sin intervención</td><td class="e"><span class="pill sup">Meta del equipo</span></td></tr>
+<tr><td>Precisión de extracción (F1)</td><td class="v">≥ 90 %</td><td>Clasificar bien cada criterio es lo que sostiene el puntaje</td><td class="e"><span class="pill sup">Meta del equipo</span></td></tr>
+<tr><td>Calidad del ranking (NDCG@5)</td><td class="v">≥ 0,85</td><td>Métrica estándar de ordenamiento (Järvelin y Kekäläinen, 2002); solo se miran los 5 primeros, igual que el reclutador</td><td class="e"><span class="pill sup">Meta del equipo</span></td></tr>
+<tr><td>Tiempo por CV</td><td class="v">≤ 15 s</td><td>Revisar 60 CV en menos de 15 minutos</td><td class="e"><span class="pill sup">Meta del equipo</span></td></tr>
+<tr><td>JSON válido</td><td class="v">100 %</td><td>Con esquema estricto no se aceptan respuestas mal formadas</td><td class="e"><span class="pill sup">Meta del equipo</span></td></tr>
+<tr><td>Equidad</td><td class="v">≥ 99 %</td><td>Cambiar datos personales no debe mover el puntaje</td><td class="e"><span class="pill sup">Meta del equipo</span></td></tr>
+</tbody></table></div></section>
+
+<section class="ficha" id="d10"><div class="cab"><span class="num">10</span><h3>Resultados de la evaluación</h3></div>
+<p class="decir">Probamos 14 CV etiquetados a mano, 3 veces cada uno, para 2 vacantes: 210 criterios en total. Todas las metas se cumplieron.</p>
+<div class="tabla"><table><thead><tr><th>Dato</th><th>Valor</th><th>De dónde sale</th><th>Estado</th></tr></thead><tbody>
+<tr><td>Exactitud por criterio</td><td class="v">100 %</td><td><code>evaluacion/resultados.json</code> → <code>exactitud_criterios = 1.0</code>, sobre 210 criterios</td><td class="e"><span class="pill ok">Medido</span></td></tr>
+<tr><td>F1 macro</td><td class="v">1,00</td><td><code>f1_macro_criterios = 1.0</code></td><td class="e"><span class="pill ok">Medido</span></td></tr>
+<tr><td>NDCG@5 promedio</td><td class="v">0,98</td><td>Promedio de las 2 vacantes: 0,964 y 1,00</td><td class="e"><span class="pill ok">Medido</span></td></tr>
+<tr><td>JSON válido al primer intento</td><td class="v">100 %</td><td><code>json_valido_primer_intento = 1.0</code></td><td class="e"><span class="pill ok">Medido</span></td></tr>
+<tr><td>Tiempo por CV</td><td class="v">9,5 s · P95 12,0 s</td><td><code>segundos_promedio</code>, <code>segundos_p95</code>. Se midió en otro equipo, con GPU de 8 GB; en la laptop sin GPU dedicada tarda más (diapositiva 14).</td><td class="e"><span class="pill ok">Medido</span></td></tr>
+<tr><td>Equidad</td><td class="v">24 de 24</td><td>6 CV con 4 variantes cada uno (sin datos, edad, estado civil, nacionalidad); 0 cambios de puntaje</td><td class="e"><span class="pill ok">Medido</span></td></tr>
+</tbody></table></div>
+<p class="nota">Si preguntan por qué todo da 100 %: son 14 CV escritos por el equipo con las respuestas conocidas. Mide que la lógica funciona; la diapositiva 11 lo prueba con CV reales.</p></section>
+
+<section class="ficha cambiada" id="d11"><div class="cab"><span class="num">11</span><h3>Prueba con CV del grupo</h3></div>
+<p class="decir">Cada integrante consiguió hojas de vida reales para un puesto: 95 CV en 4 vacantes. Se evaluaron 94; el que faltó era un escaneo y fue a revisión manual. Esta prueba muestra que el sistema funciona y es estable con CV reales. No mide exactitud, porque estos CV no tienen etiquetas.</p>
+<div class="tabla"><table><thead><tr><th>Dato</th><th>Valor</th><th>De dónde sale</th><th>Estado</th></tr></thead><tbody>
+<tr><td>CV evaluados</td><td class="v">94 / 95</td><td><code>evaluacion/seeds_resultados.json</code>: 25 + 19 + 25 + 25; 1 de cocinero a revisión manual</td><td class="e"><span class="pill ok">Medido</span></td></tr>
+<tr><td>Mediana por CV</td><td class="v">13,3 s</td><td><code>seg_mediana</code>; promedio 21,1 s y P95 24,2 s, con 4 hilos en la laptop</td><td class="e"><span class="pill ok">Medido</span></td></tr>
+<tr><td>Puntaje promedio por vacante</td><td class="v">32,4 · 41,3 · 44,2 · 55,6</td><td>Farmacia, cocinero, game designer, redes. Son bajos porque la mayoría no cumple todos los requisitos del aviso.</td><td class="e"><span class="pill ok">Medido</span></td></tr>
+<tr><td>Correcciones humanas en Farmacia</td><td class="v">6</td><td>Hechas en la app durante la prueba; el puntaje mostrado ya las incluye</td><td class="e"><span class="pill ok">Registro</span></td></tr>
+</tbody></table></div></section>
+
+<section class="ficha" id="d12"><div class="cab"><span class="num">12</span><h3>Mejor que buscar palabras</h3></div>
+<p class="decir">Con los mismos CV y la misma rúbrica, comparamos contra buscar palabras clave (Ctrl+F). La búsqueda acierta el 81 % de los criterios, pero falla justo en lo que importa: experiencia de proyectos, carreras en curso y años de experiencia.</p>
+<div class="tabla"><table><thead><tr><th>Dato</th><th>Valor</th><th>De dónde sale</th><th>Estado</th></tr></thead><tbody>
+<tr><td>Exactitud de búsqueda por palabras</td><td class="v">81,4 %</td><td><code>exactitud_linea_base = 0.814</code></td><td class="e"><span class="pill ok">Medido</span></td></tr>
+<tr><td>F1: agente frente a palabras</td><td class="v">1,00 vs 0,59</td><td><code>f1_macro_linea_base = 0.59</code>. El F1 cae porque la búsqueda casi nunca acierta en "parcial".</td><td class="e"><span class="pill ok">Medido</span></td></tr>
+<tr><td>NDCG@5 por vacante</td><td class="v">0,96 · 1,00</td><td><code>ndcg5_contable</code>, <code>ndcg5_dev</code></td><td class="e"><span class="pill ok">Medido</span></td></tr>
+</tbody></table></div></section>
+
+<section class="ficha cambiada" id="d13"><div class="cab"><span class="num">13</span><h3>Equidad y robustez</h3></div>
+<p class="decir">Cambiamos edad, estado civil y nacionalidad en los mismos CV y el puntaje no se movió. Caso real: el aviso de Farmareds pedía "edad entre 20 y 40 años" y HireMind rechaza ese criterio. Las preguntas de entrevista pasan por el mismo filtro.</p>
+<div class="tabla"><table><thead><tr><th>Dato</th><th>Valor</th><th>De dónde sale</th><th>Estado</th></tr></thead><tbody>
+<tr><td>Variantes sin cambio de puntaje</td><td class="v">24 de 24</td><td><code>equidad_sin_cambio</code>, variación máxima 0,0 puntos</td><td class="e"><span class="pill ok">Medido</span></td></tr>
+<tr><td>Datos personales detectados</td><td class="v">8 de 9 CV</td><td><code>filtro_datos_personales = "8/9"</code>. En el CV que faltó, el puntaje no cambió porque esos datos nunca son criterio.</td><td class="e"><span class="pill ok">Medido</span></td></tr>
+<tr><td>Puntaje igual en 3 corridas</td><td class="v">15 de 15 CV</td><td><code>cv_con_puntaje_estable</code>, temperatura 0</td><td class="e"><span class="pill ok">Medido</span></td></tr>
+<tr><td>Citas inventadas por el modelo</td><td class="v">0</td><td><code>citas_no_verificadas = 0</code>. El CV trampa sin Python no recibió Python inventado.</td><td class="e"><span class="pill ok">Medido</span></td></tr>
+</tbody></table></div></section>
+
+<section class="ficha nueva" id="d14"><div class="cab"><span class="num">14</span><h3>Costo computacional y equipo mínimo</h3><span class="tag">nueva</span></div>
+<p class="decir">Medimos cuánto tarda cada paso con 20 CV reales del grupo, primero con 1 usuario y después con 3 a la vez, en una PC de oficina sin tarjeta gráfica. Casi todo el tiempo lo usa el modelo: lo demás tarda 6 milisegundos. Con 3 usuarios a la vez el equipo procesa casi el doble de CV por minuto, pero cada CV tarda más y la memoria se llena. Por eso para 3 usuarios recomendamos 24 GB.</p>
+<div class="tabla"><table><thead><tr><th>Dato</th><th>1 usuario</th><th>3 a la vez</th><th>De dónde sale</th></tr></thead><tbody>
+<tr><td>CV por minuto</td><td class="v">3,6</td><td class="v">6,8</td><td>20 CV ÷ tiempo total (336,8 s y 175,9 s)</td></tr>
+<tr><td>Tiempo por CV, promedio</td><td class="v">16,8 s</td><td class="v">26,1 s</td><td>Desde que entra el PDF hasta que se guarda</td></tr>
+<tr><td>Tiempo por CV, P95</td><td class="v">35,4 s</td><td class="v">58,3 s</td><td>19 de cada 20 CV tardan menos. Los lentos son CV largos (máximo 46,6 s, un CV de farmacia)</td></tr>
+<tr><td>Modelo: leer el CV a JSON</td><td class="v">14,0 s</td><td class="v">22,0 s</td><td>Etapa <code>llm_extraccion</code></td></tr>
+<tr><td>Modelo: redactar la justificación</td><td class="v">2,8 s</td><td class="v">4,1 s</td><td>Etapa <code>llm_justificacion</code></td></tr>
+<tr><td>Leer PDF, quitar datos, verificar, puntuar, guardar</td><td class="v">6 ms</td><td class="v">6 ms</td><td>Suma de las otras 5 etapas: el modelo es más del 99,9 % del tiempo</td></tr>
+<tr><td>Tokens por CV (entrada + salida)</td><td class="v">1.488 + 939</td><td class="v">1.488 + 936</td><td>Lo que reporta LM Studio en cada respuesta; 2 llamadas por CV</td></tr>
+<tr><td>Tokens generados por segundo</td><td class="v">56</td><td class="v">106</td><td>Tokens de salida ÷ tiempo total</td></tr>
+<tr><td>RAM máxima de todo el equipo</td><td class="v">11,5 GB</td><td class="v">14,0 GB + 1,7 swap</td><td>Muestreo cada 0,5 s con psutil. Incluye sistema, navegador y app.</td></tr>
+<tr><td>Memoria de LM Studio</td><td class="v">5,4 GB</td><td class="v">6,5 GB</td><td>Mismo muestreo, solo los procesos de LM Studio</td></tr>
+<tr><td>Errores</td><td class="v">0 / 20</td><td class="v">0 / 20</td><td>Ningún CV falló ni fue a revisión manual</td></tr>
+<tr><td>Preguntas de entrevista</td><td class="v">12,9 s</td><td>—</td><td>Promedio de 3 candidatos, generadas por el modelo</td></tr>
+</tbody></table></div>
+<div class="tabla"><table><thead><tr><th>Conclusión</th><th>Valor</th><th>Por qué</th><th>Estado</th></tr></thead><tbody>
+<tr><td>Equipo mínimo, 1 usuario</td><td class="v">16 GB RAM</td><td>Con 1 usuario el pico fue 11,5 GB: cabe con margen</td><td class="e"><span class="pill ok">Medido</span></td></tr>
+<tr><td>Equipo mínimo, 3 usuarios</td><td class="v">24 GB RAM</td><td>Con 3 usuarios se usaron 14,0 GB y 1,7 GB de swap: 16 GB no alcanza. 24 GB es el siguiente tamaño común.</td><td class="e"><span class="pill sup">Inferido</span></td></tr>
+<tr><td>Servidor en la nube de 16 GB</td><td class="v">$87–128/mes</td><td>Hetzner CCX23 (4 vCPU dedicadas, 16 GB) después del alza de junio de 2026, según la región (<a href="https://docs.hetzner.com/general/infrastructure-and-availability/price-adjustment/">Hetzner</a>). No lo medimos en ese servidor, así que no damos su velocidad.</td><td class="e"><span class="pill ok">Precio verificado</span></td></tr>
+<tr><td>Costo en el equipo de la PYME</td><td class="v">$0</td><td>Usa el computador que la PYME ya tiene; solo gasta electricidad</td><td class="e"><span class="pill ok">Diseño</span></td></tr>
+</tbody></table></div>
+<p class="nota">Si preguntan por qué aquí son 16,8 s y en la diapositiva 10 son 9,5 s: esa evaluación se hizo en un equipo con tarjeta gráfica de 8 GB. Esta prueba usa una PC con gráficos integrados, que es lo que tiene una PYME típica. Cómo repetir la prueba: <code>.venv/bin/python scripts/benchmark.py -n 5 -u 1 3</code> con LM Studio cargado con <code>--parallel 3</code>. El resultado queda en <code>hiremind/evaluacion/benchmark.json</code>.</p></section>
+
+<section class="ficha cambiada" id="d15"><div class="cab"><span class="num">15</span><h3>Limitaciones y futuro</h3></div>
+<p class="decir">Lo que todavía no hace bien y lo que sigue. Solo lee PDF con texto: los escaneos van a revisión manual. La rúbrica se basa en palabras clave y no reconoce sinónimos que no estén en la lista. El modelo de 4B es lento con CV largos. Solo medimos la exactitud en 15 CV etiquetados.</p>
+<div class="tabla"><table><thead><tr><th>Dato</th><th>Valor</th><th>De dónde sale</th><th>Estado</th></tr></thead><tbody>
+<tr><td>Memoria con 4 hilos</td><td class="v">~8 GB</td><td>Lo vimos en la carga de los 95 CV: la RAM llegó al 97 % y entró swap</td><td class="e"><span class="pill ok">Observado</span></td></tr>
+<tr><td>CV de 5 páginas</td><td class="v">49 s</td><td>El tiempo máximo en la carga de los 95 CV</td><td class="e"><span class="pill ok">Medido</span></td></tr>
+<tr><td>Límite de Gmail</td><td class="v">~500 correos/día</td><td>Límite de envío de una cuenta personal de Gmail; la demo usa modo prueba</td><td class="e"><span class="pill sup">Dato del proveedor</span></td></tr>
+</tbody></table></div></section>
+
+<h2>Modelo de negocio</h2>
+
+<section class="ficha" id="d16"><div class="cab"><span class="num">16</span><h3>Modelo de negocio híbrido</h3></div>
+<p class="decir">La PYME compra una licencia perpetua y no paga nada al mes mientras su volumen sea bajo. Si crece, compra un plan anual.</p>
+<div class="tabla"><table><thead><tr><th>Dato</th><th>Valor</th><th>De dónde sale</th><th>Estado</th></tr></thead><tbody>
+<tr><td>Licencia base</td><td class="v">$299 único</td><td>Precio del equipo. Es menor que lo que cobra una agencia por 1 contratación: 75 % de $600 = $450.</td><td class="e"><span class="pill sup">Supuesto</span></td></tr>
+<tr><td>Plan Crecimiento</td><td class="v">$149/año</td><td>Precio del equipo: 12 vacantes, 1.500 CV al año y 3 equipos</td><td class="e"><span class="pill sup">Supuesto</span></td></tr>
+<tr><td>Plan Escala</td><td class="v">$299/año</td><td>Precio del equipo: sin límite, 5 equipos y nube opcional</td><td class="e"><span class="pill sup">Supuesto</span></td></tr>
+</tbody></table></div></section>
+
+<section class="ficha" id="d17"><div class="cab"><span class="num">17</span><h3>Esquema de ingresos</h3></div>
+<p class="decir">Lo que deja un cliente que crece en el año 2: un pago fuerte al inicio y luego ingresos anuales.</p>
+<div class="calc">Día 0:  $299 licencia + $75 setup      = $374
+Año 1:  $85 soporte puntual            =  $85
+Año 2:  $149 Plan Crecimiento          = $149
+Año 3:  $149 Plan + $40 capacitación   = $189
+Total en 3 años                        = $797</div>
+<p class="nota"><span class="pill sup">Supuesto</span> Es el escenario de un cliente que crece. El flujo de caja de la diapositiva 21 supone que solo el 30 % compra el Plan.</p></section>
+
+<section class="ficha" id="d18"><div class="cab"><span class="num">18</span><h3>Justificación de su pertinencia</h3><span class="tag">diapositiva del grupo</span></div>
+<p class="decir">Cinco razones por las que encaja en una PYME ecuatoriana: un solo pago, instalación en un clic, unos 17 s por CV en una PC de oficina, todo local y la opción de pasar a la nube después.</p>
+<div class="tabla"><table><thead><tr><th>Dato</th><th>Valor</th><th>De dónde sale</th><th>Estado</th></tr></thead><tbody>
+<tr><td>Tiempo por CV</td><td class="v">≈ 17 s</td><td>Promedio de 16,8 s en una PC de oficina sin GPU (diapositiva 14). Antes decía "&lt; 15 s", que solo se cumple en el equipo con GPU.</td><td class="e"><span class="pill ok">Medido</span></td></tr>
+<tr><td>Informalidad</td><td class="v">52,8 %</td><td>INEC, mayo de 2026 (diapositiva 2)</td><td class="e"><span class="pill ok">Verificado</span></td></tr>
+<tr><td>Procesamiento local</td><td class="v">100 %</td><td>LM Studio y SQLite en el equipo; la Ley Orgánica de Protección de Datos Personales (LOPDP) pide cuidar los datos de los candidatos</td><td class="e"><span class="pill ok">Diseño</span></td></tr>
+</tbody></table></div></section>
+
+<section class="ficha" id="d19"><div class="cab"><span class="num">19</span><h3>Estructura tarifaria</h3></div>
+<p class="decir">Todos los precios en una vista. El pago de entrada es $374 y se puede diferir de 3 a 6 meses con tarjeta.</p>
+<div class="tabla"><table><thead><tr><th>Servicio</th><th>Precio</th><th>Cómo se calculó</th><th>Estado</th></tr></thead><tbody>
+<tr><td>Setup remoto</td><td class="v">$75</td><td>Precio del grupo. Cuesta 3 h de técnico × $10/h = $30, más 1 h de garantía ($10); el resto es margen.</td><td class="e"><span class="pill sup">Supuesto</span></td></tr>
+<tr><td>Setup presencial</td><td class="v">$120</td><td>Precio del grupo; cubre el traslado. No hay cálculo en el documento.</td><td class="e"><span class="pill sup">Supuesto</span></td></tr>
+<tr><td>Soporte puntual</td><td class="v">$85</td><td>Precio del grupo por incidente (falla, cambio de equipo, base dañada). No hay cálculo en el documento.</td><td class="e"><span class="pill sup">Supuesto</span></td></tr>
+</tbody></table></div>
+<p class="nota">La diapositiva 21 agrega un precio de lanzamiento: $199 + $75 = $274 en los meses 4 a 6.</p></section>
+
+<section class="ficha nueva" id="d20"><div class="cab"><span class="num">20</span><h3>Costos y punto de equilibrio</h3><span class="tag">nueva · reemplaza "Cálculo del precio"</span></div>
+<p class="decir">Ahora los costos incluyen nuestros sueldos. Los 6 trabajamos a medio tiempo con el sueldo básico: $1.848 al mes. Con los demás gastos son $2.178 al mes. Cada cliente deja $352, así que necesitamos 6,2 clientes al mes. Son 74 al año, el 0,11 % de las pequeñas y medianas empresas del país.</p>
+<div class="tabla"><table><thead><tr><th>Dato</th><th>Valor</th><th>De dónde sale</th><th>Estado</th></tr></thead><tbody>
+<tr><td>Sueldo básico unificado 2026</td><td class="v">$482</td><td>Fijado por el Ministerio del Trabajo en diciembre de 2025 (<a href="https://www.eluniverso.com/noticias/economia/salario-basico-unificado-2026-482-ecuador-servicio-incrementos-multas-nota/">El Universo</a>)</td><td class="e"><span class="pill ok">Verificado</span></td></tr>
+<tr><td>Costo de un trabajador a tiempo completo</td><td class="v">$616/mes</td><td>$482 + 11,15 % de aporte patronal al IESS ($53,74) + décimo tercero ($40,17) + décimo cuarto ($40,17)</td><td class="e"><span class="pill ok">Cálculo</span></td></tr>
+<tr><td>Sueldos del equipo</td><td class="v">$1.848/mes</td><td>6 personas a medio tiempo, como estudiantes: 6 × $616 ÷ 2</td><td class="e"><span class="pill sup">Supuesto</span></td></tr>
+<tr><td>Marketing digital</td><td class="v">$250/mes</td><td>Anuncios en Facebook, Instagram y LinkedIn dirigidos a dueños de PYMEs. Es lo que más mueve el número de pilotos.</td><td class="e"><span class="pill sup">Supuesto</span></td></tr>
+<tr><td>Dominio, landing y correo</td><td class="v">$15/mes</td><td>Dominio .com y hosting básico</td><td class="e"><span class="pill sup">Supuesto</span></td></tr>
+<tr><td>Contabilidad</td><td class="v">$30/mes</td><td>Contador externo para declaraciones en régimen RIMPE</td><td class="e"><span class="pill sup">Supuesto</span></td></tr>
+<tr><td>Internet y telefonía</td><td class="v">$35/mes</td><td>Plan de internet y celular para soporte</td><td class="e"><span class="pill sup">Supuesto</span></td></tr>
+<tr><td>Comisión de cobro</td><td class="v">6 %</td><td>Pago con tarjeta diferido sin intereses: el comercio asume la comisión</td><td class="e"><span class="pill sup">Supuesto</span></td></tr>
+<tr><td>Mercado</td><td class="v">68.100 empresas</td><td>INEC, Registro Estadístico de Empresas 2023: 58.400 pequeñas (10 a 49 empleados) y 9.700 medianas A (50 a 99) (<a href="https://www.ecuadorencifras.gob.ec/documentos/web-inec/Estadisticas_Economicas/Registro_Empresas_Establecimientos/2023/Semestre_II/Principales_Resultados_REEM_2023.pdf">INEC</a>, pág. 17)</td><td class="e"><span class="pill ok">Verificado</span></td></tr>
+</tbody></table></div>
+<div class="calc">Margen por cliente   = $374 − 6 % ($22)            = $352
+Punto de equilibrio  = $2.178 ÷ $352                 = 6,2 clientes al mes
+Al año               = 6,2 × 12                      = 74 clientes
+Parte del mercado    = 74 ÷ 68.100                   = 0,11 %</div>
+<p class="nota">El setup ya no se cuenta como costo por cliente porque lo hace el equipo dentro de su sueldo. Con 10 clientes al mes son unas 30 h de instalación al mes, frente a unas 520 h disponibles entre los 6.</p></section>
+
+<section class="ficha nueva" id="d21"><div class="cab"><span class="num">21</span><h3>Capital inicial y recuperación</h3><span class="tag">nueva</span></div>
+<p class="decir">Necesitamos $10.415, unos $1.736 por socio. Los primeros 3 meses damos el sistema gratis a 30 PYMEs para que lo prueben con sus propios CV. La mitad lo compra a precio de lanzamiento. La caja vuelve a positivo en el mes 15 y al mes 24 acumula $15.307.</p>
+<div class="tabla"><table><thead><tr><th>Partida</th><th>Valor</th><th>De dónde sale</th><th>Estado</th></tr></thead><tbody>
+<tr><td>Desarrollo del MVP</td><td class="v">$2.880</td><td>480 h a $6 la hora (tarifa de practicante). Es un aporte de los socios en trabajo, no dinero que haya que poner.</td><td class="e"><span class="pill sup">Supuesto</span></td></tr>
+<tr><td>Laptop de pruebas 16 GB</td><td class="v">$750</td><td>Precio de referencia de una laptop de 16 GB en Ecuador. Sirve para probar como el cliente.</td><td class="e"><span class="pill sup">Supuesto</span></td></tr>
+<tr><td>Constitución, firma y marca</td><td class="v">$250</td><td>La SAS se constituye en línea en la Superintendencia de Compañías; se paga la firma electrónica y el registro de marca</td><td class="e"><span class="pill rev">Cotizar</span></td></tr>
+<tr><td>Capital de trabajo</td><td class="v">$6.535</td><td>Lo que falta para pagar los costos fijos hasta que los ingresos los cubran: 3 meses sin ingresos × $2.178</td><td class="e"><span class="pill ok">Cálculo</span></td></tr>
+</tbody></table></div>
+<div class="tabla"><table><thead><tr><th>Supuesto de ventas</th><th>Valor</th><th>Por qué es razonable</th><th>Estado</th></tr></thead><tbody>
+<tr><td>Pilotos gratis</td><td class="v">10 por mes, meses 1–3</td><td>30 PYMEs de 68.100. Los integrantes ya consiguieron avisos de 4 empresas reales para la prueba de 95 CV.</td><td class="e"><span class="pill sup">Supuesto</span></td></tr>
+<tr><td>Pilotos que compran</td><td class="v">50 %</td><td>El piloto usa sus propios CV y ve el ahorro frente a una agencia ($4.050 en 3 años, diapositiva 22)</td><td class="e"><span class="pill sup">Supuesto</span></td></tr>
+<tr><td>Clientes nuevos</td><td class="v">4 → 10 por mes</td><td>Empieza en 4 en el mes 4 y sube a 10. Son 81 clientes el año 1 (0,12 % del mercado) y 120 el año 2.</td><td class="e"><span class="pill sup">Supuesto</span></td></tr>
+<tr><td>Compran Plan Crecimiento en el año 2</td><td class="v">30 %</td><td>Solo las PYMEs que superan 3 vacantes o 300 CV al año</td><td class="e"><span class="pill sup">Supuesto</span></td></tr>
+</tbody></table></div>
+<div class="tabla"><table><thead><tr><th>Si los clientes nuevos son…</th><th>Se recupera en</th><th>Caja al mes 24</th></tr></thead><tbody><tr><td>100 % de lo previsto</td><td class="v">mes 15</td><td class="v">+$15.307</td></tr><tr><td>75 %</td><td class="v">mes 23</td><td class="v">+$905</td></tr><tr><td>50 %</td><td class="v">no se recupera en 24 meses</td><td class="v">−$18.508</td></tr></tbody></table></div><p class="nota">Si preguntan qué pasa si se vende menos: con 3 de cada 4 clientes previstos todavía se recupera dentro de 2 años; con la mitad, no. Por eso la recomendación de la diapositiva 27 es empezar con un piloto real y medir la conversión.</p></section>
+
+<section class="ficha" id="d22"><div class="cab"><span class="num">22</span><h3>Valor para el cliente</h3></div>
+<p class="decir">Una PYME que contrata 3 personas al año gasta en 3 años $4.050 con una agencia y $672 con HireMind con Plan Crecimiento. La licencia se paga con la primera contratación que no se terceriza.</p>
+<div class="calc">Agencia:   75 % × $600 sueldo × 9 procesos (3/año × 3 años) = $4.050
+Portales:  $60 por anuncio × 9                               =   $540
+HireMind:  $374 + $149 × 2 años                              =   $672
+Ahorro frente a agencia: $4.050 − $672                       = $3.378</div>
+<p class="nota"><span class="pill sup">Supuesto</span> Las agencias cobran entre el 50 y el 100 % del primer sueldo, y los portales entre $40 y $80 por anuncio, según el documento del Modelo de Negocio Híbrido del grupo (2026). Usamos el punto medio. El sueldo de referencia de $600 está algo por encima del básico de $482.</p></section>
+
+<section class="ficha" id="d23"><div class="cab"><span class="num">23</span><h3>Ingresos complementarios</h3><span class="tag">diapositiva del grupo</span></div>
+<p class="decir">Son servicios que el cliente pide solo cuando cambia algo: un equipo nuevo, una versión nueva del modelo o personal nuevo.</p>
+<div class="tabla"><table><thead><tr><th>Servicio</th><th>Precio</th><th>Base</th><th>Estado</th></tr></thead><tbody>
+<tr><td>Reinstalación por hardware nuevo</td><td class="v">$50–85</td><td>Precio del grupo; no hay cálculo en el documento</td><td class="e"><span class="pill rev">Justificar</span></td></tr>
+<tr><td>Actualización del modelo</td><td class="v">$60–100</td><td>Precio del grupo; no hay cálculo en el documento</td><td class="e"><span class="pill rev">Justificar</span></td></tr>
+<tr><td>Capacitación</td><td class="v">$40</td><td>Precio del grupo; no hay cálculo en el documento</td><td class="e"><span class="pill rev">Justificar</span></td></tr>
+</tbody></table></div></section>
+
+<section class="ficha" id="d24"><div class="cab"><span class="num">24</span><h3>Análisis de riesgos</h3></div>
+<p class="decir">Seis riesgos ubicados por probabilidad e impacto, cada uno con su mitigación. El más serio es el sesgo en el ranking: se mitiga con reglas fijas, evidencia citada, el filtro de datos personales y la decisión humana.</p>
+<p class="nota">La matriz es de 3 × 3 y la ubicación de cada riesgo es una valoración del equipo <span class="pill sup">Supuesto</span>. Las mitigaciones R1 y R4 están medidas en las diapositivas 13 y 18.</p></section>
+
+<section class="ficha cambiada" id="d25"><div class="cab"><span class="num">25</span><h3>Sostenibilidad y mantenimiento</h3></div>
+<p class="decir">Económica: $352 de margen por cliente, punto de equilibrio en 6,2 clientes al mes y recuperación en el mes 15. Técnica: cambiar de modelo es cambiar un nombre en la configuración. Ambiental: usa el equipo que la PYME ya tiene.</p>
+<p class="nota">Las cifras económicas salen de las diapositivas 20 y 21.</p></section>
+
+<h2>Cierre</h2>
+
+<section class="ficha cambiada" id="d26"><div class="cab"><span class="num">26</span><h3>Conclusiones</h3></div>
+<p class="decir">Cuatro números resumen el proyecto. La lección: el LLM lee y redacta, Python puntúa con reglas fijas, la persona elige, y el agente avisa y prepara la entrevista.</p>
+<div class="tabla"><table><thead><tr><th>Dato</th><th>Valor</th><th>De dónde sale</th><th>Estado</th></tr></thead><tbody>
+<tr><td>Criterios bien clasificados</td><td class="v">100 %</td><td>Diapositiva 10</td><td class="e"><span class="pill ok">Medido</span></td></tr>
+<tr><td>Tiempo por CV</td><td class="v">9,5 s</td><td>Diapositiva 10, en el equipo con GPU. La diapositiva ahora agrega "≈ 17 s en una PC de oficina" (diapositiva 14).</td><td class="e"><span class="pill ok">Medido</span></td></tr>
+<tr><td>Variantes sin cambio</td><td class="v">24 de 24</td><td>Diapositiva 13</td><td class="e"><span class="pill ok">Medido</span></td></tr>
+<tr><td>Pago de entrada</td><td class="v">$374</td><td>Diapositiva 19</td><td class="e"><span class="pill sup">Supuesto</span></td></tr>
+</tbody></table></div></section>
+
+<section class="ficha cambiada" id="d27"><div class="cab"><span class="num">27</span><h3>Recomendaciones</h3></div>
+<p class="decir">Tres para las PYMEs, tres para el producto y tres para el negocio. La más importante para el negocio: vender con una demo sobre los CV del propio cliente, que es justo lo que hace el piloto gratis.</p></section>
+
+<section class="ficha" id="d28"><div class="cab"><span class="num">28</span><h3>Referencias bibliográficas</h3></div>
+<p class="decir">No se expone; queda para consulta.</p>
+<p class="nota"><span class="pill ok">Actualizada</span> Se agregaron INEC (2024), El Universo (2025) para el salario básico, Primicias (2025) con el estudio de Multitrabajos y Hetzner (2026). Se quitó El Diario.</p></section>
+
+<section class="ficha" id="d29"><div class="cab"><span class="num">29</span><h3>¿Preguntas?</h3></div>
+<p class="decir">"Contrate con criterio. La IA ordena; usted decide." Después de esto viene la demo en vivo.</p></section>
+
+<h2 id="modelo">Modelo financiero mes a mes</h2>
+<p>Así se calcula la caja acumulada de la diapositiva 21. El código está en <code>diagramas/expo_final/finanzas.py</code>; si cambia un supuesto, se vuelve a correr y la diapositiva se regenera.</p>
+<div class="tabla"><table><thead><tr><th>Mes</th><th>Clientes nuevos</th><th>Precio</th><th>Ingreso</th><th>Egreso</th><th>Caja acumulada</th></tr></thead><tbody id="flujo"></tbody></table></div>
+<p class="nota">El ingreso descuenta la comisión de 6 %. Desde el mes 13 se suman las renovaciones: 30 % de los 81 clientes del año 1 × $149 ÷ 12 meses. La caja empieza en −$3.880, la inversión sin capital de trabajo.</p>
+
+<h2 id="pendientes">Pendientes antes de exponer</h2>
+<ol class="pend">
+  <li>Diapositiva 21: cotizar la constitución de la SAS, la firma electrónica y el registro de marca para confirmar los $250.</li>
+  <li>Diapositivas 19 y 23: el documento del grupo no explica cómo salen los $120, $85, $50–85, $60–100 y $40; conviene tener el cálculo por horas.</li>
+  <li>Que todo el grupo acuerde los supuestos de ventas: 10 pilotos al mes, 50 % de conversión y de 4 a 10 clientes al mes. Cualquiera puede tener que defenderlos.</li>
+</ol>
+</div>
+
+<script>
+const FLUJO = [[1,0,0,0,2178,-6058],[2,0,0,0,2178,-8236],[3,0,0,0,2178,-10415],[4,19,274,4894,2178,-7699],[5,5,274,1288,2178,-8590],[6,6,274,1545,2178,-9223],[7,7,374,2461,2178,-8940],[8,8,374,2812,2178,-8306],[9,8,374,2812,2178,-7671],[10,9,374,3164,2178,-6686],[11,9,374,3164,2178,-5700],[12,10,374,3516,2178,-4362],[13,10,374,3817,2178,-2723],[14,10,374,3817,2178,-1084],[15,10,374,3817,2178,555],[16,10,374,3817,2178,2194],[17,10,374,3817,2178,3833],[18,10,374,3817,2178,5472],[19,10,374,3817,2178,7111],[20,10,374,3817,2178,8750],[21,10,374,3817,2178,10389],[22,10,374,3817,2178,12029],[23,10,374,3817,2178,13668],[24,10,374,3817,2178,15307]];
+const f = (n) => (n < 0 ? "−$" : "$") + Math.abs(n).toLocaleString("es-EC");
+document.getElementById("flujo").innerHTML = FLUJO.map(([m, n, p, i, e, c]) =>
+  `<tr${m === 15 ? ' style="background:var(--ok-bg)"' : ""}><td class="v">${m}</td><td>${n}${m === 4 ? " (15 de pilotos)" : ""}</td><td>${p ? f(p) : "gratis"}</td><td class="v">${f(i)}</td><td>${f(e)}</td><td class="v" style="color:${c < 0 ? "var(--rev-fg)" : "var(--ok-fg)"}">${f(c)}</td></tr>`).join("");
+</script>
